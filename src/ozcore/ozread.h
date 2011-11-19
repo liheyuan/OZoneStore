@@ -15,7 +15,7 @@
 
 /* Public defines  */
 #define OZREAD_GETS_MAX 1024
-#define OZREAD_MALLOC_STEP 1024
+//#define OZREAD_MALLOC_STEP 1024
 #define OZREAD_TMP_PATTERN "OZONE_READ_XXXXXX"
 
 /* Public Struct */

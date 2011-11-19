@@ -6,6 +6,7 @@
  */
 
 #include "ozcore/ozone.h"
+#include "ozsort/ozsort.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -107,7 +108,7 @@ void test_ozwrite_put()
 	char value[OZ_VALUE_MAX];
 	int i, j;
 
-	if (ozwrite_open(&ow, "./test_db"))
+	if (ozwrite_open(&ow, "/tmp/test_db"))
 	{
 		printf("open db fail\n");
 	}
@@ -115,7 +116,7 @@ void test_ozwrite_put()
 	{
 		printf("open db succ\n");
 		srandom(time(NULL));
-		for (i = 0; i < 1000000; i++)
+		for (i = 0; i < 100000; i++)
 		{
 			long k = random() % 10000000 + 10000000;
 			snprintf(key, OZ_KEY_MAX, "%ld", k);
@@ -136,12 +137,22 @@ void test_ozwrite_put()
 	ozwrite_close(&ow);
 }
 
+void test_ozsort_work()
+{
+    OZSort param;
+    strcpy(param._src, "/tmp/test_db/key.dat");
+    printf("%d\n", ozsort_work(&param));
+}
+
 int main()
 {
 	//test_ozread_open();
 	//test_ozread_get();
-	test_ozread_gets();
+	//test_ozread_gets();
 	//test_ozwrite_put();
-	//sleep(10);
+
+    test_ozsort_work();
+
+	sleep(10);
 	return 0;
 }
