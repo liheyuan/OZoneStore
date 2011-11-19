@@ -6,7 +6,7 @@ LINKFLAGS :=
 #Objects
 OBJS := $(patsubst %.c, %.o, $(wildcard *.c))
 #Generate binary name
-TEST = TestOzoneStore
+TEST = ../bin/TestOzoneStore
  
 all: $(TEST)
  
