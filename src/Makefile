@@ -4,7 +4,8 @@ LD = gcc
 CXXFLAGS := -O3 -D_FILE_OFFSET_BITS=64
 LINKFLAGS :=  
 #Objects
-OBJS := $(patsubst %.c, %.o, $(wildcard *.c))
+OBJS := $(patsubst %.c, %.o, $(wildcard *.c)) \
+	$(patsubst %.c, %.o, $(wildcard ozcore/*.c))
 #Generate binary name
 TEST = ../bin/TestOzoneStore
  
