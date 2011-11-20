@@ -3,7 +3,7 @@
 #include <string.h>
 
 //Buffer
-OZRecord split[OZSORT_PER_LINE];
+OZRecord buffer[OZSORT_PER_LINE];
 
 int ozsort_work(OZSort* param)
 {
@@ -12,7 +12,7 @@ int ozsort_work(OZSort* param)
         return 1;
     }
 
-    ozsort_close(param);
+    //ozsort_clear(param);
 
     return 0;
 }
@@ -45,7 +45,7 @@ int ozsort_split(OZSort* param)
 
     /* print base file name */
     sprintf(fn, "/tmp/ozsort_%d_", time(NULL));
-    param->_nfiles = 0;
+    param->_nsplits = 0;
     cnt = 0;
 
     while(1)
@@ -53,12 +53,12 @@ int ozsort_split(OZSort* param)
         /* Read OZSORT_PER_LINE lines unless EOF or reach the split count */
         for(i = 0, cnt = 0; i < OZSORT_PER_LINE; i++)
         {
-            ret = fscanf(fpsrc, "%s\t%llu\t%u\n", key, &split[cnt]._offset, &split[cnt]._length);
+            ret = fscanf(fpsrc, "%s\t%llu\t%u\n", key, &buffer[cnt]._offset, &buffer[cnt]._length);
 			/* only read 3 items is considered succ */
             if(ret==3)
             {
-                split[cnt]._key = malloc(sizeof(char) * (strlen(key) + 1));
-                strcpy(split[cnt]._key ,key);
+                buffer[cnt]._key = malloc(sizeof(char) * (strlen(key) + 1));
+                strcpy(buffer[cnt]._key ,key);
                 cnt++;    
             }
             if(ret==EOF)
@@ -68,23 +68,23 @@ int ozsort_split(OZSort* param)
         }
 
         /* Make new split filename and open it */
-        if(param->_nfiles>=OZSORT_MAX_SPLITS)
+        if(param->_nsplits>=OZSORT_MAX_SPLITS)
         {
             return 3;    
         }
-        sprintf(param->_files[param->_nfiles], "%s%d", fn, param->_nfiles);
-        fp = fopen(param->_files[param->_nfiles], "w");
+        sprintf(param->_splits[param->_nsplits], "%s%d", fn, param->_nsplits);
+        fp = fopen(param->_splits[param->_nsplits], "w");
         if(!fp)
         {
             return 2;    
         }
-        param->_nfiles++;
+        param->_nsplits++;
 
         /* Sort & output */
-        qsort(split, cnt, sizeof(OZRecord), cmp_oz_record);
+        qsort(buffer, cnt, sizeof(OZRecord), cmp_oz_record);
         for(i=0; i<cnt; i++)
         {
-            fprintf(fp, "%s\t%llu\t%u\n", split[i]._key, split[i]._offset, split[i]._length);
+            fprintf(fp, "%s\t%llu\t%u\n", buffer[i]._key, buffer[i]._offset, buffer[i]._length);
         }
         fclose(fp);
         fp = NULL;
@@ -100,12 +100,17 @@ int ozsort_split(OZSort* param)
     return 0;
 }
 
-void ozsort_close(OZSort* param)
+void ozsort_clear(OZSort* param)
 {
     int i;
-    for(i=0; i<param->_nfiles; i++)
+    for(i=0; i<param->_nsplits; i++)
     {
-        unlink(param->_files[i]);
+        unlink(param->_splits[i]);
     }
-    param->_nfiles = 0;
+    param->_nsplits = 0;
+}
+
+int ozsort_merge(OZSort* param)
+{
+
 }

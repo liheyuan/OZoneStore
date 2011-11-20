@@ -2,5 +2,8 @@
 *.o
 *.d
 
-#Binary file
+# edit emp file
+*.swp
+
+# Binary file
 TestOzoneStore

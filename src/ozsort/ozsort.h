@@ -20,29 +20,44 @@ typedef struct
     char _src[OZ_BUF_SIZE];
 
     /* external file names */
-    char _files[OZ_BUF_SIZE][OZSORT_MAX_SPLITS];
+    char _splits[OZ_BUF_SIZE][OZSORT_MAX_SPLITS];
 
     /* number of actual used fps */
-    int _nfiles;
+    int _nsplits;
 
 }OZSort;
 
 /*
  * ozsort main entry
  * 
- * @param param filename for external sort/merge
+ * @param param a bundle of param using throughout ozsort
  * @return 0:succ, 1:split fail, 2:sort fail
  */
 int ozsort_work(OZSort* param);
 
-/* split src_file into many temp files, write files handle into 
+/* 
+ * split src_file into many temp files, write files handle into 
  * every OZSORT_MAX_SPLITS lines
  * 
- * @param 
+ * @param param a bundle of param using throughout ozsort
  * @return 0:succ, 1:src file open fail, 2:tmp file create fail, 3:more split than OZSORT_MAX_SPLITS
  */
 int ozsort_split(OZSort* param);
 
-void ozsort_close(OZSort* param);
+/*
+ * merge splits file into one, and filter the replicated ones
+ * 
+ * @param param a bundle of param using throughout ozsort
+ * @return 0:succ, 1:
+ */
+int ozsort_merge(OZSort* param);
+
+/*
+ * remove all temp files during split
+ * 
+ * @param a bundle of param using throughout ozsort
+ * @return void, always succ
+ */
+void ozsort_clear(OZSort* param);
 
 #endif
