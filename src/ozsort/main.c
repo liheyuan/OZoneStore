@@ -22,15 +22,8 @@ void test_ozsort_work()
 	printf("%ld\n", param._mlines);
 }
 
-void test_ozsort_lines()
-{
-	printf("Lines:\n", ozsort_lines("/tmp/ozsort_merge_1321782715"));
-}
-
 int main()
 {
-    test_ozsort_work();
-	//test_ozsort_lines();
 
 	sleep(10);
 	return 0;

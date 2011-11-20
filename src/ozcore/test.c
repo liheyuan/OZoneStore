@@ -5,7 +5,7 @@
  *      Author: liheyuan
  */
 
-#include "ozcore/ozone.h"
+#include "ozone.h"
 
 #include <stdio.h>
 #include <unistd.h>
