@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 /* Public defines  */
-#define OZREAD_GETS_MAX 1024
+#define OZREAD_GETS_MAX 512
 //#define OZREAD_MALLOC_STEP 1024
 #define OZREAD_TMP_PATTERN "OZONE_READ_XXXXXX"
 
@@ -79,7 +79,6 @@ typedef struct OZRead_Gets
 	long _nkeys;
 
 	/* Values Buffer */
-	//char _values[OZ_VALUE_MAX][OZREAD_GETS_MAX];
 	char _values[OZREAD_GETS_MAX][OZ_VALUE_MAX];
 
 	/* Temporary buffer for sort  */

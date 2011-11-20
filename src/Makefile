@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
 LD = gcc
-CXXFLAGS := -O3 -D_FILE_OFFSET_BITS=64
+CXXFLAGS := -g -D_FILE_OFFSET_BITS=64
 LINKFLAGS :=  
 
 
@@ -17,9 +17,9 @@ SORT = ../bin/OZoneSort
 # For all binary files
 all: $(STORE) $(SORT)
 $(STORE): $(OBJS_STORE)
-	$(LD) $(OBJS_STORE) $(LINKFLAGS) -o $(STORE)
+	$(LD)  $(LINKFLAGS) $(OBJS_STORE) -o $(STORE)
 $(SORT): $(OBJS_SORT)
-	$(LD) $(OBJS_SORT) $(LINKFLAGS) -o $(SORT)
+	$(LD)  $(LINKFLAGS) $(OBJS_SORT) -o $(SORT)
 
 %.o:%.c
 	$(CC) $(CXXFLAGS) -c -o $@ $<
@@ -27,5 +27,5 @@ $(SORT): $(OBJS_SORT)
 # Clear
 .PHONY: all clean
 clean:
-	rm -rf $(OBJS) $(OJBS:.o=.d) $(STORE) $(SORT)
+	rm -rf $(OBJS_SORT) $(OJBS_SORT:.o=.d)  $(OBJS_STORE) $(OJBS_STORE:.o=.d) $(STORE) $(SORT)
 

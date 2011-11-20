@@ -6,4 +6,6 @@
 *.swp
 
 # Binary file
-TestOzoneStore
+OZoneSort
+OZoneStore
+OZoneSort

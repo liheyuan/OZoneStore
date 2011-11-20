@@ -24,7 +24,7 @@ void test_ozread_open()
 
 void test_ozread_get()
 {
-	OZRead or;
+	OZRead or = {NULL, 0, NULL};
 	if (ozread_open(&or, "/home/liheyuan/workspace_cpp_yq/kesdb/test_db/"))
 	{
 		printf("open db fail\n");
@@ -52,8 +52,10 @@ void test_ozread_get()
 
 void test_ozread_gets()
 {
-	OZRead or;
-	if (ozread_open(&or, "./test_db/"))
+	OZRead or = {NULL, 0, NULL};
+	const char* fn = "/tmp/test_db";
+
+	if (ozread_open(&or, fn))
 	{
 		printf("open db fail\n");
 	}
@@ -136,14 +138,14 @@ void test_ozwrite_put()
 	ozwrite_close(&ow);
 }
 
+
 int main()
 {
 	//test_ozread_open();
 	//test_ozread_get();
-	//test_ozread_gets();
+	test_ozread_gets();
 	//test_ozwrite_put();
 
 
-	sleep(10);
 	return 0;
 }

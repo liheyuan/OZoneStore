@@ -6,9 +6,9 @@
  */
 
 #include "ozread.h"
-
 #include <string.h>
 #include <stdlib.h>
+
 
 int ozread_open(OZRead* handle, const char* dbpath)
 {
@@ -26,9 +26,9 @@ int ozread_open(OZRead* handle, const char* dbpath)
 int ozread_open_kf(OZRead* handle, const char* dbpath)
 {
 	//Variable
-	char cmd[OZ_BUF_SIZE];
 	FILE* out;
 	long cnt = 0;
+	char cmd[OZ_BUF_SIZE];
 	char key[OZ_KEY_MAX];
 	uint64_t offset;
 	uint32_t length;
@@ -37,7 +37,7 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 	snprintf(
 			cmd,
 			OZ_BUF_SIZE,
-			"python ./rep.py %s/%s",
+			"./OZoneSort %s/%s",
 			dbpath, OZ_KEY_FILENAME);
 	out = popen(cmd, "r");
 	if (!out)

@@ -20,7 +20,7 @@ typedef struct
     char _src[OZ_BUF_SIZE];
 
     /* external file names */
-    char _splits[OZ_BUF_SIZE][OZSORT_MAX_SPLITS];
+    char _splits[OZSORT_MAX_SPLITS][OZ_BUF_SIZE];
 
     /* number of actual used fps */
     int _nsplits;
