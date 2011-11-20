@@ -1,16 +1,16 @@
-#Compiler and flags
+# Compiler and flags
 CC = gcc
 LD = gcc
 CXXFLAGS := -O3 -D_FILE_OFFSET_BITS=64
 LINKFLAGS :=  
-#Objects
+# Objects
 OBJS := $(patsubst %.c, %.o, $(wildcard *.c)) \
 	$(patsubst %.c, %.o, $(wildcard ozcore/*.c)) \
 	$(patsubst %.c, %.o, $(wildcard ozsort/*.c))
-#Generate binary name
+# Generate binary name
 TEST = ../bin/TestOzoneStore
 
-#For test file
+# For test file
 all: $(TEST)
  
 $(TEST): $(OBJS)
