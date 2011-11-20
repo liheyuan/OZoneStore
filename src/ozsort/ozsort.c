@@ -85,15 +85,17 @@ int ozsort_split(OZSort* param)
         }
         param->_nsplits++;
 
-        /* Sort & output */
+        /* Sort & output & free _key memory */
         qsort(buffer, cnt, sizeof(OZRecord), cmp_oz_record);
         for(i=0; i<cnt; i++)
         {
             fprintf(fp, "%s\t%llu\t%u\n", buffer[i]._key, buffer[i]._offset, buffer[i]._length);
+			free(buffer[i]._key);
+			buffer[i]._key = NULL;
         }
         fclose(fp);
         fp = NULL;
-		
+
 		/* finish all lines */
         if(ret==EOF)
         {
@@ -164,7 +166,7 @@ int ozsort_merge(OZSort* param)
 	{
 		if(fscanf(fps[i], "%s\t%llu\t%u\n", key, &datas[i]._offset, &datas[i]._length)!=EOF)
 		{
-			datas[i]._key = malloc(sizeof(char) * (strlen(key) + 1));
+			datas[i]._key = malloc( sizeof(char) * (OZ_KEY_MAX + 1));
 			strcpy(datas[i]._key ,key);
 			flags[i] = 1;
 		}
@@ -243,6 +245,8 @@ int ozsort_merge(OZSort* param)
 		{
 			fclose(fps[i]);
 		}
+		free(datas[i]._key);
+		datas[i]._key = NULL;
 	}
 	fclose(out);
 }
