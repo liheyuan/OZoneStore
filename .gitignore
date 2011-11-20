@@ -1,0 +1,6 @@
+# compile sources
+*.o
+*.d
+
+#Binary file
+TestOzoneStore
