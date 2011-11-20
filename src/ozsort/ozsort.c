@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-//Buffer
+/* Buffer */
 OZRecord buffer[OZSORT_PER_LINE];
 
 int ozsort_work(OZSort* param)
