@@ -153,6 +153,6 @@ int main()
 
     test_ozsort_work();
 
-	//sleep(10);
+	sleep(10);
 	return 0;
 }

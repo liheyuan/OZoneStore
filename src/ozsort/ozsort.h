@@ -26,7 +26,7 @@ typedef struct
     int _nsplits;
 
 	/* merge file */
-	//char _merge[OZ_BUF_SIZE];
+	char _merge[OZ_BUF_SIZE];
 
 }OZSort;
 
@@ -54,13 +54,5 @@ int ozsort_split(OZSort* param);
  * @return 0:succ, 1:open split file fail, 2:open out file fail
  */
 int ozsort_merge(OZSort* param);
-
-/*
- * remove all temp files during split
- * 
- * @param a bundle of param using throughout ozsort
- * @return void, always succ
- */
-void ozsort_clear(OZSort* param);
 
 #endif
