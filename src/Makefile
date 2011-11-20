@@ -9,7 +9,8 @@ OBJS := $(patsubst %.c, %.o, $(wildcard *.c)) \
 	$(patsubst %.c, %.o, $(wildcard ozsort/*.c))
 #Generate binary name
 TEST = ../bin/TestOzoneStore
- 
+
+#For test file
 all: $(TEST)
  
 $(TEST): $(OBJS)
