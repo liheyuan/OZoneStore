@@ -49,6 +49,7 @@ int ozsort_split(OZSort* param)
 	/* print base file name */
 	sprintf(fn, "/tmp/ozsort_%d_", time(NULL));
 	param->_nsplits = 0;
+	param->_mlines = 0;
 	cnt = 0;
 
 	while(1)
@@ -183,6 +184,7 @@ int ozsort_merge(OZSort* param)
 		{
 			/* output last one */
 			fprintf(out, "%s\t%llu\t%u\n", prev._key, prev._offset, prev._length);
+			param->_mlines++;
 			break;
 		}
 
@@ -208,6 +210,7 @@ int ozsort_merge(OZSort* param)
 		{
 			/* different key, output previous */
 			fprintf(out, "%s\t%llu\t%u\n", prev._key, prev._offset, prev._length);
+			param->_mlines++;
 			strcpy(prev._key, datas[minIdx]._key);	
 			prev._offset = datas[minIdx]._offset;
 			prev._length = datas[minIdx]._length;
@@ -246,4 +249,24 @@ int ozsort_merge(OZSort* param)
 	}
 
 	return 0;
+}
+
+long ozsort_lines(const char* file)
+{
+	FILE* fp = fopen(file, "r");
+	char buf[4096];
+	long cnt = 0;
+	if(!fp)
+	{
+		return 0;
+	}
+	
+	while(fgets(buf, 4096, fp)!=NULL)
+	{
+		printf("%s\n", buf);
+		cnt++;	
+	}
+	fclose(fp);
+	
+	return cnt;
 }

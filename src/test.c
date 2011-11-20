@@ -6,7 +6,6 @@
  */
 
 #include "ozcore/ozone.h"
-#include "ozsort/ozsort.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -137,13 +136,6 @@ void test_ozwrite_put()
 	ozwrite_close(&ow);
 }
 
-void test_ozsort_work()
-{
-    OZSort param;
-    strcpy(param._src, "/tmp/test_db/key.dat");
-    printf("%d\n", ozsort_work(&param));
-}
-
 int main()
 {
 	//test_ozread_open();
@@ -151,7 +143,6 @@ int main()
 	//test_ozread_gets();
 	//test_ozwrite_put();
 
-    test_ozsort_work();
 
 	sleep(10);
 	return 0;

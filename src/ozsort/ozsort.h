@@ -27,6 +27,9 @@ typedef struct
 
 	/* merge file */
 	char _merge[OZ_BUF_SIZE];
+	
+	/* how many lines in _merge file */
+	long _mlines;
 
 }OZSort;
 
