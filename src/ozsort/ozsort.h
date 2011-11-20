@@ -5,7 +5,7 @@
 #include "../ozcore/ozread.h"
 
 /* Public defines  */
-#define OZSORT_PER_LINE 10240
+#define OZSORT_PER_LINE 204800
 #define OZSORT_MAX_SPLITS 100
 
 /* Public struct */
@@ -25,13 +25,16 @@ typedef struct
     /* number of actual used fps */
     int _nsplits;
 
+	/* merge file */
+	//char _merge[OZ_BUF_SIZE];
+
 }OZSort;
 
 /*
  * ozsort main entry
  * 
  * @param param a bundle of param using throughout ozsort
- * @return 0:succ, 1:split fail, 2:sort fail
+ * @return 0:succ, 1:split&sort fail, 2:merge&sort fail
  */
 int ozsort_work(OZSort* param);
 
@@ -48,7 +51,7 @@ int ozsort_split(OZSort* param);
  * merge splits file into one, and filter the replicated ones
  * 
  * @param param a bundle of param using throughout ozsort
- * @return 0:succ, 1:
+ * @return 0:succ, 1:open split file fail, 2:open out file fail
  */
 int ozsort_merge(OZSort* param);
 

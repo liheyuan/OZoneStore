@@ -116,17 +116,17 @@ void test_ozwrite_put()
 	{
 		printf("open db succ\n");
 		srandom(time(NULL));
-		for (i = 0; i < 100000; i++)
+		for (i = 0; i < 1000000; i++)
 		{
 			long k = random() % 10000000 + 10000000;
 			snprintf(key, OZ_KEY_MAX, "%ld", k);
 			value[0] = '\0';
-			for (j = 0; j < 500; j++)
+			for(j = 0; j < 500; j++)
 			{
 				strcat(value, " ");
 				strcat(value, key);
 			}
-			if (ozwrite_put(&ow, key, value))
+			if(ozwrite_put(&ow, key, value))
 			{
 				printf("write %s fail.\n", key);
 			}
@@ -153,6 +153,6 @@ int main()
 
     test_ozsort_work();
 
-	sleep(10);
+	//sleep(10);
 	return 0;
 }

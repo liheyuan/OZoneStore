@@ -11,8 +11,13 @@ int ozsort_work(OZSort* param)
     {
         return 1;
     }
-
-    //ozsort_clear(param);
+	
+	if(ozsort_merge(param))
+	{
+		return 2;
+	}
+		
+    ozsort_clear(param);
 
     return 0;
 }
@@ -112,5 +117,132 @@ void ozsort_clear(OZSort* param)
 
 int ozsort_merge(OZSort* param)
 {
+	/* Var */
+	FILE* fps[OZSORT_MAX_SPLITS];
+	FILE* out;
+	OZRecord datas[OZSORT_MAX_SPLITS];
+	OZRecord prev;
+	OZRecord* minr;
+	int flags[OZSORT_MAX_SPLITS];
+	char fn[OZ_BUF_SIZE];
+	char key[OZ_KEY_MAX];
+	int i;
+	int minIdx;
+	int ret;
+	int hasMin;
+	int last;
 
+	/* open each split file -> fps */
+	for(i=0; i<param->_nsplits; i++)
+	{
+		fps[i] = fopen(param->_splits[i], "rb");
+		if(!fps[i])
+		{
+			/* fail open one, close previous fps */
+			while(i>=0)
+			{
+				if(fps[i])
+				{
+					fclose(fps[i]);
+				}
+				i--;
+			}
+			return 1;
+		}
+	}
+
+	/* make merge filename and open it */
+	snprintf(fn, OZ_BUF_SIZE, "/tmp/ozsort_merge_%d", time(NULL));
+	out = fopen(fn, "w");
+	if(!out)
+	{
+		return 2;
+	}
+
+	/* first read, each split one record */
+	for(i=0; i<param->_nsplits; i++)
+	{
+		if(fscanf(fps[i], "%s\t%llu\t%u\n", key, &datas[i]._offset, &datas[i]._length)!=EOF)
+		{
+			datas[i]._key = malloc(sizeof(char) * (strlen(key) + 1));
+			strcpy(datas[i]._key ,key);
+			flags[i] = 1;
+		}
+		else
+		{
+			flags[i] = 0;	
+		}
+	}
+	
+	/* do until all splits is EOF */
+	while(1)
+	{
+		/* select min */
+		sprintf(key, "~");
+		hasMin = 0;
+		for(i=0; i<param->_nsplits; i++)
+		{
+			if(flags[i] && strcmp(datas[i]._key, key)<0)
+			{
+				strcpy(key, datas[i]._key);	
+				minIdx = i;
+				hasMin = 1;
+			}
+		}
+		/* all eof */
+		if(!hasMin)
+		{
+			/* output last one */
+			fprintf(out, "%s\t%llu\t%u\n", prev._key, prev._offset, prev._length);
+			break;
+		}
+		
+		/* filter duplicate keys but smaller offset */
+		if(prev._key==NULL)
+		{
+			prev._key = (char*)malloc(sizeof(char) * OZ_KEY_MAX);
+			strcpy(prev._key, datas[minIdx]._key);	
+			prev._offset = datas[minIdx]._offset;
+			prev._length = datas[minIdx]._length;
+		}
+		else if(strcmp(prev._key, datas[minIdx]._key) ==0 )
+		{
+			if(datas[minIdx]._offset >= prev._offset)
+			{
+				/* replace if same key but large offset */
+				prev._offset = datas[minIdx]._offset;
+				prev._length = datas[minIdx]._length;
+			}
+		}
+		else
+		{
+			/* different key, output previous */
+			fprintf(out, "%s\t%llu\t%u\n", prev._key, prev._offset, prev._length);
+			strcpy(prev._key, datas[minIdx]._key);	
+			prev._offset = datas[minIdx]._offset;
+			prev._length = datas[minIdx]._length;
+		}
+
+		/* read next in channel */
+		if(fscanf(fps[minIdx], "%s\t%llu\t%u\n", key, &datas[minIdx]._offset, &datas[minIdx]._length)!=EOF)
+		{
+			datas[minIdx]._key = malloc(sizeof(char) * (strlen(key) + 1));
+			strcpy(datas[minIdx]._key ,key);
+		}
+		else
+		{
+			flags[minIdx] = 0;
+		}
+	}
+
+	/* close all split file and merge file */
+	free(prev._key);
+	for(i=0; i<param->_nsplits; i++)
+	{
+		if(fps[i])
+		{
+			fclose(fps[i]);
+		}
+	}
+	fclose(out);
 }
