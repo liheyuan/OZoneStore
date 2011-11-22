@@ -32,7 +32,7 @@ void test_ozread_get()
 	else
 	{
 		//Param
-		OZRead_Get get;
+		OZRead_Get get = {NULL, NULL};
 		int ret;
 		get._key = "16455956";
 		//Get
@@ -40,7 +40,10 @@ void test_ozread_get()
 		if (!ret)
 		{
 			printf("ozread_get() succ\n");
-			printf("%s\n", get._value);
+			if(get._value)
+			{
+				printf("%s\n", get._value);
+			}
 		}
 		else
 		{
@@ -74,9 +77,10 @@ void test_ozread_gets()
 		printf("open db succ\n");
 
 		/* init gets param */
+		scanf("%d", &n);
 		ozread_gets_init(&gets, n);
 
-		//Get 20 keys
+		/* Get n keys */
 		for (i = 0; i < n; i++)
 		{
 			if(scanf("%s", buf)!=1)
@@ -101,12 +105,12 @@ void test_ozread_gets()
 				if(gets._values[i])
 				{
 					printf("length: %d\n", strlen(gets._values[i]));
+					printf("%s\n", gets._values[i]);
 				}
 				else
 				{
 					printf("not found \n");
 				}
-				//printf("%s\n", gets._values[i]);
 			}
 		}
 		else
@@ -123,7 +127,7 @@ void test_ozread_gets()
 		{
 			free(gets._keys[i]);
 		}
-		//free others
+		/* free others */
 		ozread_gets_free(&gets);
 	}
 
@@ -175,6 +179,6 @@ int main()
 	test_ozread_gets();
 	//test_ozwrite_put();
 
-
+	sleep(10);
 	return 0;
 }
