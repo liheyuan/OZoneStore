@@ -57,11 +57,11 @@ typedef struct OZRead_Cookie
  */
 typedef struct OZRead_Get
 {
-	/* Multiple keys*/
+	/* Single key (Input)*/
 	char* _key;
 
-	/* Value Buffer */
-	char _value[OZ_VALUE_MAX];
+	/* Value Buffer (Output) */
+	char* _value;
 
 } OZRead_Get;
 
@@ -141,7 +141,7 @@ int ozread_open_kf(OZRead* handle, const char* dbpath);
  * @param handle The handler used throughout ozread
  * @param param User input key, value bufeer etc.
  *
- * @return 0:success, 1:invalid handle, 2:invalid param, 3:key not found, 4:get value fail
+ * @return 0:success, 1:invalid handle, 2:invalid param, 3:key not found, 4:get value fail, 5:memory not enough for store value
  */
 int ozread_get(OZRead* handle, OZRead_Get* param);
 
@@ -214,5 +214,14 @@ int cmp_ozread_gets_keys(const void* a, const void* b);
  *
  */
 void ozread_close(OZRead* handle);
+
+/*
+ * Free memory usage by OZRead_Get
+ *
+ * @param param Param needed to be free
+ * 
+ *
+ */
+void ozread_free_get(OZRead_Get* param);
 
 #endif /* OZONEREAD_H_ */

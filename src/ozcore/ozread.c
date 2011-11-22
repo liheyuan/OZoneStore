@@ -111,6 +111,13 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 	}
 	//printf("%s %llu %u\n", rec->_key, rec->_offset, rec->_length);
 
+	//Allocate memory for value
+	param->_value = malloc(sizeof(char)*( rec->_length + 1));
+	if(!param->_value)
+	{
+		return 5;
+	}
+
 	//Get Value in file
 	if ((ret = ozread_get_value(handle, rec, param->_value, OZ_VALUE_MAX)))
 	{
@@ -314,5 +321,15 @@ void ozread_close(OZRead* handle)
 		{
 			fclose(handle->_fpval);
 		}
+	}
+}
+
+void ozread_free_get(OZRead_Get* param)
+{
+	param->_key = NULL;
+	if(param->_value)
+	{
+		free(param->_value);
+		param->_value = NULL;
 	}
 }

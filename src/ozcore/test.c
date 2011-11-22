@@ -25,15 +25,17 @@ void test_ozread_open()
 void test_ozread_get()
 {
 	OZRead or = {NULL, 0, NULL};
-	if (ozread_open(&or, "/home/liheyuan/workspace_cpp_yq/kesdb/test_db/"))
+	if (ozread_open(&or, "/tmp/test_db/"))
 	{
 		printf("open db fail\n");
 	}
 	else
 	{
+		//Param
 		OZRead_Get get;
 		int ret;
-		get._key = "17196044";
+		get._key = "16455956";
+		//Get
 		ret = ozread_get(&or, &get);
 		if (!ret)
 		{
@@ -44,6 +46,8 @@ void test_ozread_get()
 		{
 			printf("ozread_get() fail %d\n", ret);
 		}
+		//Remember to free
+		ozread_free_get(&get);
 	}
 
 	//Close
@@ -117,7 +121,7 @@ void test_ozwrite_put()
 	{
 		printf("open db succ\n");
 		srandom(time(NULL));
-		for (i = 0; i < 1000000; i++)
+		for (i = 0; i < 100000; i++)
 		{
 			long k = random() % 10000000 + 10000000;
 			snprintf(key, OZ_KEY_MAX, "%ld", k);
@@ -142,8 +146,8 @@ void test_ozwrite_put()
 int main()
 {
 	//test_ozread_open();
-	//test_ozread_get();
-	test_ozread_gets();
+	test_ozread_get();
+	//test_ozread_gets();
 	//test_ozwrite_put();
 
 
