@@ -119,7 +119,7 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 	}
 
 	//Get Value in file
-	if ((ret = ozread_get_value(handle, rec, param->_value, OZ_VALUE_MAX)))
+	if ((ret = ozread_get_value(handle, rec, param->_value)))
 	{
 		//printf("%d\n", ret);
 		return 4;
@@ -159,15 +159,9 @@ int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 	return 1;
 }
 
-int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf,
-		long buf_len)
+int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf)
 {
 	int ret;
-	//Check value length and buffer
-	if (rec->_length >= buf_len)
-	{
-		return 1;
-	}
 
 	if (fseeko(handle->_fpval, rec->_offset, SEEK_SET))
 	{
@@ -184,8 +178,79 @@ int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf,
 	return 0;
 }
 
+int ozread_gets_init(OZRead_Gets* param ,long n)
+{
+	/* n */
+	param->_nkeys = n;
+
+	/* malloc keys pointer */
+	param->_keys = malloc(sizeof(char*)*n);
+	if(!param->_keys)
+	{
+		return 1;
+	}
+	param->_keys = malloc(sizeof(char*)*n);
+
+	/* malloc values pointer */
+	param->_values = malloc(sizeof(char*)*n);
+	if(!param->_values)
+	{
+		return 1;
+	}
+	memset(param->_values, 0, sizeof(char*)*n);
+
+	/* malloc cookie buffer */
+	param->_cookies = malloc( sizeof(OZRead_Cookie) * n );
+	if(!param->_cookies)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+void ozread_gets_free(OZRead_Gets* param)
+{
+	long i;
+
+	/* free keys pointer */
+	if(param->_keys)
+	{
+		free(param->_keys);
+		param->_keys = NULL;
+	}
+
+	/* free values pointer and malloc space */
+	for(i=0; i<param->_nkeys; i++)
+	{
+		if(param->_values[i])
+		{
+			free(param->_values[i]);
+			param->_values[i] = NULL;
+		}
+	}
+	if(param->_values)
+	{
+		free(param->_values);
+		param->_values = NULL;
+	}
+
+	/* malloc cookie buffer */
+	if(param->_cookies)
+	{
+		free(param->_cookies);
+		param->_cookies = NULL;
+	}
+
+	/* n */
+	param->_nkeys = 0;
+}
+
 int ozread_gets(OZRead* handle, OZRead_Gets* param)
 {
+	/* Var */
+	long i;
+
 	//Check handle
 	if (!handle)
 	{
@@ -196,13 +261,23 @@ int ozread_gets(OZRead* handle, OZRead_Gets* param)
 		return 2;
 	}
 
-	//Get keys and sort them in _offset asc order, store in param->cookies
-
 	//Get keys
-	ozread_gets_keys(handle, param);
+	if(ozread_gets_keys(handle, param))
+	{
+		return 3;
+	}
 
-	//Memset clear param->_values
-	memset(param->_values, 0, OZ_VALUE_MAX * OZREAD_GETS_MAX);
+	printf("aaaa\n");
+	fflush(stdout);
+	/* malloc space for each values according cookies[i]_length */
+	for(i=0; i<param->_ncookies; i++)
+	{
+		param->_values[param->_cookies[i]._index] = malloc(sizeof(char)*(param->_cookies[i]._length + 1));
+		if(!param->_values[param->_cookies[i]._index])
+		{
+			return 1;
+		}
+	}
 
 	//Get values, set into param->values
 	ozread_gets_values(handle, param);
@@ -240,7 +315,8 @@ int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 	//Read all keys
 	for (cnt = 0, i = 0; i < param->_nkeys; i++)
 	{
-		if (!ozread_get_key(handle, param->_keys[i], &rec))
+		/* get key & skip null key */
+		if (param->_keys[i] && !ozread_get_key(handle, param->_keys[i], &rec))
 		{
 			//Found
 			param->_cookies[cnt]._offset = rec->_offset;
@@ -251,11 +327,12 @@ int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 	}
 	param->_ncookies = cnt;
 
-	//Sort by _offset
+
+	/* sort by _offset */
 	qsort(param->_cookies, param->_ncookies, sizeof(OZRead_Cookie),
 			cmp_ozread_gets_keys);
 
-	//Test only
+	/* Test only */
 	for (i = 0; i < param->_ncookies; i++)
 	{
 		printf("%s %llu %u\n", param->_keys[param->_cookies[i]._index],
@@ -268,7 +345,6 @@ int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 int ozread_gets_values(OZRead* handle, OZRead_Gets* param)
 {
 	//Var
-	char buf[OZ_VALUE_MAX];
 	int i;
 	OZRead_Cookie* pc;
 
@@ -276,7 +352,6 @@ int ozread_gets_values(OZRead* handle, OZRead_Gets* param)
 	for (i = 0; i < param->_ncookies; i++)
 	{
 		pc = &(param ->_cookies[i]);
-		memset(buf, 0, sizeof(char) * OZ_VALUE_MAX);
 		//fseek
 		if (fseeko(handle->_fpval, pc->_offset, SEEK_SET))
 		{
@@ -285,24 +360,20 @@ int ozread_gets_values(OZRead* handle, OZRead_Gets* param)
 			continue;
 		}
 
-		//Check size
-		if (pc->_length >= OZ_VALUE_MAX)
+		//Check buffer avaliable
+		if (!param->_values[pc->_index])
 		{
-			//Value size bigger than pre-define
-			printf("check size\n");
 			continue;
 		}
 
 		//fread
-		if (fread(buf, pc->_length, 1, handle->_fpval) != 1)
+		if (fread(param->_values[pc->_index], pc->_length, 1, handle->_fpval) != 1)
 		{
 			//fread	fail
-			printf("fread fail\n");
+			param->_values[pc->_index][0] = '\0';
 			continue;
 		}
-
-		//set to _values
-		memcpy(param->_values[pc->_index], buf, pc->_length);
+		param->_values[pc->_index][pc->_length] = '\0';
 	}
 
 	return 0;
@@ -324,7 +395,7 @@ void ozread_close(OZRead* handle)
 	}
 }
 
-void ozread_free_get(OZRead_Get* param)
+void ozread_get_free(OZRead_Get* param)
 {
 	param->_key = NULL;
 	if(param->_value)

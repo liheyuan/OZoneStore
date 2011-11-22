@@ -47,7 +47,7 @@ void test_ozread_get()
 			printf("ozread_get() fail %d\n", ret);
 		}
 		//Remember to free
-		ozread_free_get(&get);
+		ozread_get_free(&get);
 	}
 
 	//Close
@@ -69,19 +69,28 @@ void test_ozread_gets()
 		int ret, i;
 		struct timeval start, end;
 		int n = 10;
+		char buf[1024];
 
 		printf("open db succ\n");
+
+		/* init gets param */
+		ozread_gets_init(&gets, n);
+
 		//Get 20 keys
 		for (i = 0; i < n; i++)
 		{
-			if(scanf("%s", gets._keys[i])!=1)
+			if(scanf("%s", buf)!=1)
 			{
 				printf("Read key error\n");
+			}
+			else
+			{
+				gets._keys[i] = malloc(sizeof(char)*(strlen(buf)+1));
+				strcpy(gets._keys[i], buf);
 			}
 		}
 
 		gettimeofday(&start, NULL);
-		gets._nkeys = n;
 		ret = ozread_gets(&or, &gets);
 		if (!ret)
 		{
@@ -97,9 +106,18 @@ void test_ozread_gets()
 		{
 			printf("ozread_gets() fail %d\n", ret);
 		}
+
 		gettimeofday(&end, NULL);
 		printf("time %lf(s)\n", ((end.tv_sec * 1000000 + end.tv_usec)
 				- (start.tv_sec * 1000000 + start.tv_usec)) / (float) (1000000));
+
+		/* free keys */
+		for(i=0; i<n; i++)
+		{
+			free(gets._keys[i]);
+		}
+		//free others
+		ozread_gets_free(&gets);
 	}
 
 	//Close
@@ -109,8 +127,8 @@ void test_ozread_gets()
 void test_ozwrite_put()
 {
 	OZWrite ow;
-	char key[OZ_KEY_MAX];
-	char value[OZ_VALUE_MAX];
+	char key[128];
+	char value[8192];
 	int i, j;
 
 	if (ozwrite_open(&ow, "/tmp/test_db"))
@@ -146,8 +164,8 @@ void test_ozwrite_put()
 int main()
 {
 	//test_ozread_open();
-	test_ozread_get();
-	//test_ozread_gets();
+	//test_ozread_get();
+	test_ozread_gets();
 	//test_ozwrite_put();
 
 
