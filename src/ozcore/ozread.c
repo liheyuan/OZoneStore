@@ -25,15 +25,15 @@ int ozread_open(OZRead* handle, const char* dbpath)
 
 int ozread_open_kf(OZRead* handle, const char* dbpath)
 {
-	//Variable
+	/* Variable */
 	FILE* out;
 	long cnt = 0;
 	char cmd[OZ_BUF_SIZE];
-	char key[OZ_KEY_MAX];
+	char key[OZ_KEY_BUF_SIZE];
 	uint64_t offset;
 	uint32_t length;
 
-	//Use sort twice to sort/uniqure keyfile -> pipe to FILE*
+	/* Use sort twice to sort/uniqure keyfile -> pipe to FILE* */
 	snprintf(
 			cmd,
 			OZ_BUF_SIZE,
@@ -44,7 +44,6 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 	{
 		return 1;
 	}
-	printf("%s\n", cmd);
 
 	//Read lines and datas
 	if (fscanf(out, "%ld", &handle->_nrecs) != 1 || handle->_nrecs == 0)
@@ -52,21 +51,19 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 		fclose(out);
 		return 2;
 	}
-	//printf("%ld\n", handle->_nrecs);
+
 	handle->_recs = (OZRecord*) malloc(sizeof(OZRecord) * handle->_nrecs);
-	//printf("a\n");
 	while (fscanf(out, "%s\t%llu\t%u\n", key, &offset, &length) != EOF)
 	{
-		//Copy to table
+		/* Copy to table */
 		handle->_recs[cnt]._offset = offset;
 		handle->_recs[cnt]._length = length;
 		handle->_recs[cnt]._key = malloc(sizeof(char) * (strlen(key) + 1));
 		strcpy(handle->_recs[cnt]._key, key);
 		cnt++;
 	}
-	//printf("%ld\n", cnt);
 
-	//Close
+	/* Close */
 	fclose(out);
 
 	return 0;
@@ -109,7 +106,6 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 		//Not found key
 		return 3;
 	}
-	//printf("%s %llu %u\n", rec->_key, rec->_offset, rec->_length);
 
 	//Allocate memory for value
 	param->_value = malloc(sizeof(char)*( rec->_length + 1));
@@ -121,7 +117,6 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 	//Get Value in file
 	if ((ret = ozread_get_value(handle, rec, param->_value)))
 	{
-		//printf("%d\n", ret);
 		return 4;
 	}
 
@@ -131,7 +126,7 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 
 int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 {
-	//Use Binary Search to locate Record
+	/* Use Binary Search to locate Record */
 	long low = 0;
 	long high = handle->_nrecs - 1;
 	long mid = 0;
@@ -141,7 +136,7 @@ int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 		int val = strcmp(handle->_recs[mid]._key, key);
 		if (val == 0)
 		{
-			//Found
+			/* Found */
 			*rec = &(handle->_recs[mid]);
 			return 0;
 		}
@@ -154,7 +149,7 @@ int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 			low = mid + 1;
 		}
 	}
-	//Not Found
+	/* Not Found */
 	*rec = NULL;
 	return 1;
 }
@@ -162,16 +157,16 @@ int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf)
 {
 	int ret;
-
+	
+	/* fseeko */
 	if (fseeko(handle->_fpval, rec->_offset, SEEK_SET))
 	{
 		return 2;
 	}
 
-	//Read
+	/* fread */
 	if ((ret = fread(buf, rec->_length, 1, handle->_fpval)) != 1)
 	{
-		printf("%d\n", ret);
 		return 3;
 	}
 
@@ -251,7 +246,7 @@ int ozread_gets(OZRead* handle, OZRead_Gets* param)
 	/* Var */
 	long i;
 
-	//Check handle
+	/* Check handle */
 	if (!handle)
 	{
 		return 1;
@@ -261,14 +256,12 @@ int ozread_gets(OZRead* handle, OZRead_Gets* param)
 		return 2;
 	}
 
-	//Get keys
+	/* Get keys */
 	if(ozread_gets_keys(handle, param))
 	{
 		return 3;
 	}
 
-	printf("aaaa\n");
-	fflush(stdout);
 	/* malloc space for each values according cookies[i]_length */
 	for(i=0; i<param->_ncookies; i++)
 	{
@@ -279,10 +272,10 @@ int ozread_gets(OZRead* handle, OZRead_Gets* param)
 		}
 	}
 
-	//Get values, set into param->values
+	/* Get values, set into param->values */
 	ozread_gets_values(handle, param);
 
-	//All succ
+	/* All succ */
 	return 0;
 }
 
@@ -291,7 +284,7 @@ int cmp_ozread_gets_keys(const void* a, const void* b)
 	long long x, y;
 	x = ((OZRead_Cookie*) a)->_offset;
 	y = ((OZRead_Cookie*) b)->_offset;
-	//Compare
+	/* Compare */
 	if (x > y)
 	{
 		return 1;
@@ -308,17 +301,17 @@ int cmp_ozread_gets_keys(const void* a, const void* b)
 
 int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 {
-	//Var
+	/* Var */
 	int i, cnt;
 	OZRecord* rec = NULL;
 
-	//Read all keys
+	/* Read all keys */
 	for (cnt = 0, i = 0; i < param->_nkeys; i++)
 	{
 		/* get key & skip null key */
 		if (param->_keys[i] && !ozread_get_key(handle, param->_keys[i], &rec))
 		{
-			//Found
+			/* Found */
 			param->_cookies[cnt]._offset = rec->_offset;
 			param->_cookies[cnt]._length = rec->_length;
 			param->_cookies[cnt]._index = i;
@@ -333,43 +326,42 @@ int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 			cmp_ozread_gets_keys);
 
 	/* Test only */
-	for (i = 0; i < param->_ncookies; i++)
+	/*for (i = 0; i < param->_ncookies; i++)
 	{
 		printf("%s %llu %u\n", param->_keys[param->_cookies[i]._index],
 				param->_cookies[i]._offset, param->_cookies[i]._length);
-	}
+	}*/
 
 	return 0;
 }
 
 int ozread_gets_values(OZRead* handle, OZRead_Gets* param)
 {
-	//Var
+	/* Var */
 	int i;
 	OZRead_Cookie* pc;
 
-	//Get each value according to and set it into param->_values
+	/* Get each value according to and set it into param->_values */
 	for (i = 0; i < param->_ncookies; i++)
 	{
 		pc = &(param ->_cookies[i]);
-		//fseek
+		/* fseek */
 		if (fseeko(handle->_fpval, pc->_offset, SEEK_SET))
 		{
-			//fseek fail
-			printf("fseek fail\n");
+			/* fseek fail */
 			continue;
 		}
 
-		//Check buffer avaliable
+		/* Check buffer avaliable */
 		if (!param->_values[pc->_index])
 		{
 			continue;
 		}
 
-		//fread
+		/* fread */
 		if (fread(param->_values[pc->_index], pc->_length, 1, handle->_fpval) != 1)
 		{
-			//fread	fail
+			/* fread fail */
 			param->_values[pc->_index][0] = '\0';
 			continue;
 		}

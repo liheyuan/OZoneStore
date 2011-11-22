@@ -12,8 +12,7 @@
 //#define _FILE_OFFSET_BITS 64
 
 /* Public Define */
-#define OZ_KEY_MAX 64
-//#define OZ_VALUE_MAX 8192
+#define OZ_KEY_BUF_SIZE 128
 #define OZ_BUF_SIZE 1024
 #define OZ_KEY_FILENAME "key.dat"
 #define OZ_VALUE_FILENAME "value.dat"

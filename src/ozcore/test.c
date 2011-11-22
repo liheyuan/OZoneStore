@@ -134,8 +134,8 @@ void test_ozread_gets()
 void test_ozwrite_put()
 {
 	OZWrite ow;
-	char key[128];
-	char value[8192];
+	char key[OZ_KEY_BUF_SIZE];
+	char value[4096];
 	int i, j;
 
 	if (ozwrite_open(&ow, "/tmp/test_db"))
@@ -149,7 +149,7 @@ void test_ozwrite_put()
 		for (i = 0; i < 100000; i++)
 		{
 			long k = random() % 10000000 + 10000000;
-			snprintf(key, OZ_KEY_MAX, "%ld", k);
+			snprintf(key, OZ_KEY_BUF_SIZE, "%ld", k);
 			value[0] = '\0';
 			for(j = 0; j < 500; j++)
 			{

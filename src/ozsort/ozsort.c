@@ -3,7 +3,15 @@
 #include <string.h>
 
 /* Buffer */
+/* used by ozsort_split */
 OZRecord buffer[OZSORT_PER_LINE];
+char fn[OZ_BUF_SIZE];
+/* used by ozsort_merge */
+OZRecord datas[OZSORT_MAX_SPLITS];
+int flags[OZSORT_MAX_SPLITS];
+FILE* fps[OZSORT_MAX_SPLITS];
+/* used by ozsort_split and ozsort_merge */
+char key[OZ_KEY_BUF_SIZE];
 
 int ozsort_work(OZSort* param)
 {
@@ -33,8 +41,6 @@ int ozsort_split(OZSort* param)
 	/* Global Var */
 	FILE* fpsrc = NULL;
 	FILE* fp = NULL;
-	char fn[OZ_BUF_SIZE];
-	char key[OZ_KEY_MAX];
 	int i;
 	long cnt;
 	int ret;
@@ -109,13 +115,9 @@ int ozsort_split(OZSort* param)
 int ozsort_merge(OZSort* param)
 {
 	/* Var */
-	FILE* fps[OZSORT_MAX_SPLITS];
 	FILE* out;
-	OZRecord datas[OZSORT_MAX_SPLITS];
 	OZRecord prev;
 	OZRecord* minr;
-	int flags[OZSORT_MAX_SPLITS];
-	char key[OZ_KEY_MAX];
 	int i;
 	int minIdx;
 	int ret;
@@ -154,7 +156,7 @@ int ozsort_merge(OZSort* param)
 	{
 		if(fscanf(fps[i], "%s\t%llu\t%u\n", key, &datas[i]._offset, &datas[i]._length)!=EOF)
 		{
-			datas[i]._key = malloc( sizeof(char) * (OZ_KEY_MAX + 1));
+			datas[i]._key = malloc( sizeof(char) * (strlen(key) + 1));
 			strcpy(datas[i]._key ,key);
 			flags[i] = 1;
 		}
@@ -191,7 +193,7 @@ int ozsort_merge(OZSort* param)
 		/* filter duplicate keys but smaller offset */
 		if(prev._key==NULL)
 		{
-			prev._key = (char*)malloc(sizeof(char) * OZ_KEY_MAX);
+			prev._key = (char*)malloc(sizeof(char) * OZ_KEY_BUF_SIZE);
 			strcpy(prev._key, datas[minIdx]._key);	
 			prev._offset = datas[minIdx]._offset;
 			prev._length = datas[minIdx]._length;
