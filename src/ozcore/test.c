@@ -98,7 +98,14 @@ void test_ozread_gets()
 			for (i = 0; i < gets._nkeys; i++)
 			{
 				printf("%s\n", gets._keys[i]);
-				printf("%d\n", strlen(gets._values[i]));
+				if(gets._values[i])
+				{
+					printf("length: %d\n", strlen(gets._values[i]));
+				}
+				else
+				{
+					printf("not found \n");
+				}
 				//printf("%s\n", gets._values[i]);
 			}
 		}
