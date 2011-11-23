@@ -3,8 +3,9 @@ OS = 64
 # Compiler and flags
 CXX = g++
 LD = g++ 
-CXXFLAGS := -D_FILE_OFFSET_BITS=64 -I../..//include_deps/thrift -L../lib_deps/lib/$(OS)
-LINKFLAGS := -lthrift 
+CXXFLAGS := -D_FILE_OFFSET_BITS=64 -I../../include_deps/thrift
+LINKFLAGS := 
+LIBS_THRIFT := ../../lib_deps/$(OS)/libthrift.a
 
 # Objects for WriteServer
 OBJS_WRITE := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
@@ -22,10 +23,10 @@ READ_SERVER = ../../bin/OZoneReadServer
 all: $(WRITE_SERVER) $(READ_SERVER)
 
 $(WRITE_SERVER): $(OBJS_WRITE)
-	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_WRITE) -o $(WRITE_SERVER)
+	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_WRITE) $(LIBS_THRIFT) -o $(WRITE_SERVER)
 
 $(READ_SERVER): $(OBJS_READ)
-	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_READ) -o $(READ_SERVER)
+	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_READ) $(LIBS_THRIFT) -o $(READ_SERVER)
 
 %.o:%.c
 	$(CXX) $(CFLAGS) -c -o $@ $<
