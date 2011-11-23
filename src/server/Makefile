@@ -1,5 +1,5 @@
 # OS Type
-OS = 64
+OS = $(shell getconf LONG_BIT)
 # Compiler and flags
 CXX = g++
 LD = g++ 
