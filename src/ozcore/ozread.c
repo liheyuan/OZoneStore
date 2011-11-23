@@ -45,7 +45,7 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 		return 1;
 	}
 
-	//Read lines and datas
+	/* Read lines and datas */
 	if (fscanf(out, "%ld", &handle->_nrecs) != 1 || handle->_nrecs == 0)
 	{
 		fclose(out);
@@ -58,7 +58,7 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 		/* Copy to table */
 		handle->_recs[cnt]._offset = offset;
 		handle->_recs[cnt]._length = length;
-		handle->_recs[cnt]._key = malloc(sizeof(char) * (strlen(key) + 1));
+		handle->_recs[cnt]._key = (char*)malloc(sizeof(char) * (strlen(key) + 1));
 		strcpy(handle->_recs[cnt]._key, key);
 		cnt++;
 	}
@@ -108,7 +108,7 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 	}
 
 	//Allocate memory for value
-	param->_value = malloc(sizeof(char)*( rec->_length + 1));
+	param->_value = (char*)malloc(sizeof(char)*( rec->_length + 1));
 	if(!param->_value)
 	{
 		return 5;
@@ -179,15 +179,15 @@ int ozread_gets_init(OZRead_Gets* param ,long n)
 	param->_nkeys = n;
 
 	/* malloc keys pointer */
-	param->_keys = malloc(sizeof(char*)*n);
+	param->_keys = (char**)malloc(sizeof(char*)*n);
 	if(!param->_keys)
 	{
 		return 1;
 	}
-	param->_keys = malloc(sizeof(char*)*n);
+	param->_keys = (char**)malloc(sizeof(char*)*n);
 
 	/* malloc values pointer */
-	param->_values = malloc(sizeof(char*)*n);
+	param->_values = (char**)malloc(sizeof(char*)*n);
 	if(!param->_values)
 	{
 		return 1;
@@ -195,7 +195,7 @@ int ozread_gets_init(OZRead_Gets* param ,long n)
 	memset(param->_values, 0, sizeof(char*)*n);
 
 	/* malloc cookie buffer */
-	param->_cookies = malloc( sizeof(OZRead_Cookie) * n );
+	param->_cookies = (OZRead_Cookie*)malloc( sizeof(OZRead_Cookie) * n );
 	if(!param->_cookies)
 	{
 		return 1;
@@ -265,7 +265,7 @@ int ozread_gets(OZRead* handle, OZRead_Gets* param)
 	/* malloc space for each values according cookies[i]_length */
 	for(i=0; i<param->_ncookies; i++)
 	{
-		param->_values[param->_cookies[i]._index] = malloc(sizeof(char)*(param->_cookies[i]._length + 1));
+		param->_values[param->_cookies[i]._index] = (char*)malloc(sizeof(char)*(param->_cookies[i]._length + 1));
 		if(!param->_values[param->_cookies[i]._index])
 		{
 			return 1;

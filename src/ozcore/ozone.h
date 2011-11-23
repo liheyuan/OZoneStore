@@ -8,8 +8,6 @@
 #ifndef OZONE_H_
 #define OZONE_H_
 
-/* Define for big File */
-//#define _FILE_OFFSET_BITS 64
 
 /* Public Define */
 #define OZ_KEY_BUF_SIZE 128

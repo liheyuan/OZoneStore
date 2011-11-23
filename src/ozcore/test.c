@@ -1,18 +1,15 @@
-/*
- * main.c
- *
- *  Created on: 2011-11-11
- *      Author: liheyuan
- */
+
+
 
 #include "ozone.h"
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/time.h>
+
+
 
 void test_ozread_open()
 {
@@ -76,11 +73,11 @@ void test_ozread_gets()
 
 		printf("open db succ\n");
 
-		/* init gets param */
+		// init gets param
 		scanf("%d", &n);
 		ozread_gets_init(&gets, n);
 
-		/* Get n keys */
+		// Get n keys
 		for (i = 0; i < n; i++)
 		{
 			if(scanf("%s", buf)!=1)
@@ -89,7 +86,7 @@ void test_ozread_gets()
 			}
 			else
 			{
-				gets._keys[i] = malloc(sizeof(char)*(strlen(buf)+1));
+				gets._keys[i] = (char*)malloc(sizeof(char)*(strlen(buf)+1));
 				strcpy(gets._keys[i], buf);
 			}
 		}
@@ -122,12 +119,12 @@ void test_ozread_gets()
 		printf("time %lf(s)\n", ((end.tv_sec * 1000000 + end.tv_usec)
 				- (start.tv_sec * 1000000 + start.tv_usec)) / (float) (1000000));
 
-		/* free keys */
+		// free keys 
 		for(i=0; i<n; i++)
 		{
 			free(gets._keys[i]);
 		}
-		/* free others */
+		// free others
 		ozread_gets_free(&gets);
 	}
 
@@ -176,9 +173,11 @@ int main()
 {
 	//test_ozread_open();
 	//test_ozread_get();
-	test_ozread_gets();
+	//test_ozread_gets();
 	//test_ozwrite_put();
 
 	sleep(10);
 	return 0;
+
 }
+
