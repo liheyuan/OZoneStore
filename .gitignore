@@ -2,6 +2,10 @@
 *.o
 *.d
 
+#py compile file
+*pyc
+*pyo
+
 # edit emp file
 *.swp
 
