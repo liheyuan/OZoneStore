@@ -29,7 +29,7 @@ $(READ_SERVER): $(OBJS_READ)
 	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_READ) $(LIBS_THRIFT) -o $(READ_SERVER)
 
 %.o:%.c
-	$(CXX) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
