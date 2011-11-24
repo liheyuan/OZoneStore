@@ -4,8 +4,12 @@ OS = $(shell getconf LONG_BIT)
 CXX = g++
 LD = g++ 
 CXXFLAGS := -D_FILE_OFFSET_BITS=64 -I../../include_deps/thrift
-LINKFLAGS := 
-LIBS_THRIFT := ../../lib_deps/$(OS)/libthrift.a
+LINKFLAGS := -lpthread
+LIBS_THRIFT := ../../lib_deps/$(OS)/libthriftnb.a
+LIBS_THRIFT += ../../lib_deps/$(OS)/libthrift.a
+LIBS_THRIFT += ../../lib_deps/$(OS)/librt.a
+LIBS_THRIFT += ../../lib_deps/$(OS)/libevent_core.a
+
 
 # Objects for WriteServer
 OBJS_WRITE := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
@@ -23,7 +27,7 @@ READ_SERVER = ../../bin/OZoneReadServer
 all: $(WRITE_SERVER) $(READ_SERVER)
 
 $(WRITE_SERVER): $(OBJS_WRITE)
-	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_WRITE) $(LIBS_THRIFT) -o $(WRITE_SERVER)
+	$(LD) $(CXXFLAGS) $(OBJS_WRITE) $(LINKFLAGS) $(LIBS_THRIFT) -o $(WRITE_SERVER)
 
 $(READ_SERVER): $(OBJS_READ)
 	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_READ) $(LIBS_THRIFT) -o $(READ_SERVER)

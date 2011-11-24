@@ -44,7 +44,9 @@ int ozwrite_open(OZWrite* handle, const char* dbpath);
  * @param key The key
  * @param value The value
  *
- * @return 0:succ, 1:invalid handle, 2:write key fail ,3:write value fail, 4:ftello fail
+ * @return 0:succ, 1:invalid handle, 2:write key fail ,3:write value fail, 
+ *                 4:ftello fail, 5:value length is zero, 6:key length is zero
+ * 6:value
  */
 int ozwrite_put(OZWrite* handle, const char* key, const char* value);
 

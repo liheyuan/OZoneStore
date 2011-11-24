@@ -55,6 +55,12 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 		return 1;
 	}
 
+	//Check value length
+	if(strlen(value)<1)
+	{
+		return 5;
+	}
+
 	//Before Write value, get current offset
 	off = ftello(handle->_fpval);
 	if (off == -1)
@@ -69,11 +75,18 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 		return 3;
 	}
 
+	//Check key length
+	if(strlen(key)<1)
+	{
+		return 6;
+	}
+
 	//Write Key
-	if (fprintf(handle->_fpkey, "%s\t%lld\t%u\n", key, off, len) == -1)
+	if(fprintf(handle->_fpkey, "%s\t%lld\t%u\n", key, off, len) == -1)
 	{
 		return 2;
 	}
+
 
 	//Flush Key and Value
 	fflush(handle->_fpkey);

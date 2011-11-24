@@ -7,12 +7,17 @@
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
+#include <thrift/concurrency/ThreadManager.h>
+#include <thrift/concurrency/PosixThreadFactory.h>
+#include <server/TNonblockingServer.h>
 #include <string>
+#include <iostream>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
+using namespace ::apache::thrift::concurrency;
 using namespace std;
 
 using boost::shared_ptr;
@@ -51,6 +56,14 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 				case 3:
 					exp.why = "write value error";
 					break;
+				case 4:
+					exp.why = "ftello fail";
+				case 5:
+					exp.why = "value length can't be zero";
+					break;
+				case 6:
+					exp.why = "key length can't be zero";
+					break;
 				default:
 					exp.why = "unknown error";
 					break;
@@ -71,14 +84,25 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 int main(int argc, char **argv)
 {
 	int port = 9090;
+	int numThreads = 8;
 	string path("/tmp/test_db");
+
+	//Create TProcessor
 	shared_ptr<OZWriteServiceHandler> handler(new OZWriteServiceHandler(path));
 	shared_ptr<TProcessor> processor(new OZWriteServiceProcessor(handler));
-	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+
+	//Create TProtocolFactory
 	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+	//Create ThreadManager
+	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(numThreads);
+	shared_ptr<ThreadFactory> threadFactory(new PosixThreadFactory());
+	threadManager->threadFactory(threadFactory);
+	threadManager->start();
+
+	//Create TNonblockingServer
+	TNonblockingServer server(processor, protocolFactory, port, threadManager);
+	cout << "OZWriteServer Starting..." << endl;
 	server.serve();
 	return 0;
 }
