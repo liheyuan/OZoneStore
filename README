@@ -1,0 +1,39 @@
+Why OZoneStore?
+===============
+Yes, there are already key-value databases. But those hardly meet demands at KeSeek.com. KeSeek.com is an distributed search engine that built upon many low-end-virtual-machines. 
+
+We DO need a store solution to fulfill the following demands:
+
+(1) Use RAM as less as it can be
+Because the cost, we need to support put/get 100,000 documents on a machine that RAM is under 32MB. It sounds funny, but very important for KeSeek.com. Nearly no no-sql may achieve this. Instead, many nosql dbs use lots of Cache to speed up lookup, which is not very
+important for an search engine, see DONT'S (1).
+
+(2) Less Disk I/O Operation
+Our virtual machines are usually shared with lots of users. We try to build our system over different Host-Machins.
+But the Disk I/O is still expensive for we don't have any RAM for cache like other nosql databses. Also, thanks to the
+architecture of KeSeek.com, we seperate crawler(put doc) and serach(get doc) in totally different stage, which means
+we don't need to update key/value while read docs. So we use an static sorted array to keep all keys.
+
+(3) It can suppourt at least Python and C & C++
+We decide to develop OZoneStore in C & C++. But KeSeek.com is major used Python. So, thrift is used to solve
+cross-language problem.
+
+(4) An unique key
+An unique DocID for every document perferd to be pre-generated before index. Only a small frantion of nosql suppout
+incremental ID. We implement this in OZoneStore.
+
+Also, we DON'T need some feature as other nosql provided.
+
+(1) Cache to speed up key->value lookup
+Search engine need only to get value from key at the stage of display result & snippet to users. The docs to get is rather random
+and usually 10 at once, which is not so performance demand. Pure one Disk I/O per key & value is enough to fulfill
+this demand. We'd like to save some RAM and bring our Search Engine cost down.
+
+(2) ...?
+
+Why it is called OZoneStore?
+===========================
+I'd like to name each my open source project an molecule in air for all KeSeek.com sub-project. OZone is O3 that bring
+fresh. I'd like use ozone to name it for indicated swift, fresh and samll.
+
+
