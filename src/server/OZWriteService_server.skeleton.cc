@@ -35,6 +35,11 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 			}
 		}
 
+		virtual ~OZWriteServiceHandler()
+		{
+			ozwrite_close(&ow);
+		}
+
 		void put(const std::string& key, const std::string& value)
 		{
 			//Try put
@@ -104,6 +109,7 @@ int main(int argc, char **argv)
 	TNonblockingServer server(processor, protocolFactory, port, threadManager);
 	cout << "OZWriteServer Starting..." << endl;
 	server.serve();
+	cout << "OZWriteServer Stoping..." << endl;
 	return 0;
 }
 

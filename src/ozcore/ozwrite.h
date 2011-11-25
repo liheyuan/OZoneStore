@@ -11,6 +11,7 @@
 #include "ozone.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 /* Public Struct */
 
@@ -25,6 +26,9 @@ typedef struct OZWrite
 	/* File handler for value file mode(ab) */
 	FILE* _fpval;
 
+	/* Mutex lock */
+	pthread_mutex_t _lock;
+
 } OZWrite;
 
 /*
@@ -33,7 +37,7 @@ typedef struct OZWrite
  * @param handle The handler used throughout ozwrite
  * @param dbpath The path for db
  *
- * @return 0:succ, 1: invalid handle, 2:open key file fail, 3:open value file fail
+ * @return 0:succ, 1: invalid handle, 2:open key file fail, 3:open value file fail, 4:mutex_lock init fail
  */
 int ozwrite_open(OZWrite* handle, const char* dbpath);
 
@@ -46,6 +50,7 @@ int ozwrite_open(OZWrite* handle, const char* dbpath);
  *
  * @return 0:succ, 1:invalid handle, 2:write key fail ,3:write value fail, 
  *                 4:ftello fail, 5:value length is zero, 6:key length is zero
+ *                 7:lock fail, 8:unlock fail
  * 6:value
  */
 int ozwrite_put(OZWrite* handle, const char* key, const char* value);
