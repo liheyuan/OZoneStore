@@ -16,7 +16,11 @@ service OZReadService{
 
 service OZWriteService{
 	
-	void put(1:string key, 2:string value) throws (1:OZException ouch),
+	/* void put(1:string key, 2:string value) throws (1:OZException ouch), */
+	#key was auto-generated (increcemental)
+	void put(1:string value) throws (1:OZException ouch),
 
-	void puts(1:list<string> key, 2:list<string> value) throws (1:OZException ouch)
+	/* #void puts(1:list<string> key, 2:list<string> values) throws (1:OZException ouch) */
+	#key was auto-generated (increcemental)
+	void puts(1:list<string> values) throws (1:OZException ouch)
 }

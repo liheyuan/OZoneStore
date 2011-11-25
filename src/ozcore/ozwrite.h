@@ -26,9 +26,6 @@ typedef struct OZWrite
 	/* File handler for value file mode(ab) */
 	FILE* _fpval;
 
-	/* Mutex lock */
-	pthread_mutex_t _lock;
-
 } OZWrite;
 
 /*

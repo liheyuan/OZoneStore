@@ -14,43 +14,37 @@ namespace ozstore {
 class OZWriteServiceIf {
  public:
   virtual ~OZWriteServiceIf() {}
-  virtual void put(const std::string& key, const std::string& value) = 0;
-  virtual void puts(const std::vector<std::string> & key, const std::vector<std::string> & value) = 0;
+  virtual void put(const std::string& value) = 0;
+  virtual void puts(const std::vector<std::string> & values) = 0;
 };
 
 class OZWriteServiceNull : virtual public OZWriteServiceIf {
  public:
   virtual ~OZWriteServiceNull() {}
-  void put(const std::string& /* key */, const std::string& /* value */) {
+  void put(const std::string& /* value */) {
     return;
   }
-  void puts(const std::vector<std::string> & /* key */, const std::vector<std::string> & /* value */) {
+  void puts(const std::vector<std::string> & /* values */) {
     return;
   }
 };
 
 typedef struct _OZWriteService_put_args__isset {
-  _OZWriteService_put_args__isset() : key(false), value(false) {}
-  bool key;
+  _OZWriteService_put_args__isset() : value(false) {}
   bool value;
 } _OZWriteService_put_args__isset;
 
 class OZWriteService_put_args {
  public:
 
-  OZWriteService_put_args() : key(""), value("") {
+  OZWriteService_put_args() : value("") {
   }
 
   virtual ~OZWriteService_put_args() throw() {}
 
-  std::string key;
   std::string value;
 
   _OZWriteService_put_args__isset __isset;
-
-  void __set_key(const std::string& val) {
-    key = val;
-  }
 
   void __set_value(const std::string& val) {
     value = val;
@@ -58,8 +52,6 @@ class OZWriteService_put_args {
 
   bool operator == (const OZWriteService_put_args & rhs) const
   {
-    if (!(key == rhs.key))
-      return false;
     if (!(value == rhs.value))
       return false;
     return true;
@@ -82,7 +74,6 @@ class OZWriteService_put_pargs {
 
   virtual ~OZWriteService_put_pargs() throw() {}
 
-  const std::string* key;
   const std::string* value;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -147,9 +138,8 @@ class OZWriteService_put_presult {
 };
 
 typedef struct _OZWriteService_puts_args__isset {
-  _OZWriteService_puts_args__isset() : key(false), value(false) {}
-  bool key;
-  bool value;
+  _OZWriteService_puts_args__isset() : values(false) {}
+  bool values;
 } _OZWriteService_puts_args__isset;
 
 class OZWriteService_puts_args {
@@ -160,24 +150,17 @@ class OZWriteService_puts_args {
 
   virtual ~OZWriteService_puts_args() throw() {}
 
-  std::vector<std::string>  key;
-  std::vector<std::string>  value;
+  std::vector<std::string>  values;
 
   _OZWriteService_puts_args__isset __isset;
 
-  void __set_key(const std::vector<std::string> & val) {
-    key = val;
-  }
-
-  void __set_value(const std::vector<std::string> & val) {
-    value = val;
+  void __set_values(const std::vector<std::string> & val) {
+    values = val;
   }
 
   bool operator == (const OZWriteService_puts_args & rhs) const
   {
-    if (!(key == rhs.key))
-      return false;
-    if (!(value == rhs.value))
+    if (!(values == rhs.values))
       return false;
     return true;
   }
@@ -199,8 +182,7 @@ class OZWriteService_puts_pargs {
 
   virtual ~OZWriteService_puts_pargs() throw() {}
 
-  const std::vector<std::string> * key;
-  const std::vector<std::string> * value;
+  const std::vector<std::string> * values;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -283,11 +265,11 @@ class OZWriteServiceClient : virtual public OZWriteServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void put(const std::string& key, const std::string& value);
-  void send_put(const std::string& key, const std::string& value);
+  void put(const std::string& value);
+  void send_put(const std::string& value);
   void recv_put();
-  void puts(const std::vector<std::string> & key, const std::vector<std::string> & value);
-  void send_puts(const std::vector<std::string> & key, const std::vector<std::string> & value);
+  void puts(const std::vector<std::string> & values);
+  void send_puts(const std::vector<std::string> & values);
   void recv_puts();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -327,17 +309,17 @@ class OZWriteServiceMultiface : virtual public OZWriteServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void put(const std::string& key, const std::string& value) {
+  void put(const std::string& value) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
-      ifaces_[i]->put(key, value);
+      ifaces_[i]->put(value);
     }
   }
 
-  void puts(const std::vector<std::string> & key, const std::vector<std::string> & value) {
+  void puts(const std::vector<std::string> & values) {
     size_t sz = ifaces_.size();
     for (size_t i = 0; i < sz; ++i) {
-      ifaces_[i]->puts(key, value);
+      ifaces_[i]->puts(values);
     }
   }
 

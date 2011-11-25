@@ -16,19 +16,17 @@ except:
 
 
 class Iface:
-  def put(self, key, value):
+  def put(self, value):
     """
     Parameters:
-     - key
      - value
     """
     pass
 
-  def puts(self, key, value):
+  def puts(self, values):
     """
     Parameters:
-     - key
-     - value
+     - values
     """
     pass
 
@@ -40,19 +38,17 @@ class Client(Iface):
       self._oprot = oprot
     self._seqid = 0
 
-  def put(self, key, value):
+  def put(self, value):
     """
     Parameters:
-     - key
      - value
     """
-    self.send_put(key, value)
+    self.send_put(value)
     self.recv_put()
 
-  def send_put(self, key, value):
+  def send_put(self, value):
     self._oprot.writeMessageBegin('put', TMessageType.CALL, self._seqid)
     args = put_args()
-    args.key = key
     args.value = value
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -72,20 +68,18 @@ class Client(Iface):
       raise result.ouch
     return
 
-  def puts(self, key, value):
+  def puts(self, values):
     """
     Parameters:
-     - key
-     - value
+     - values
     """
-    self.send_puts(key, value)
+    self.send_puts(values)
     self.recv_puts()
 
-  def send_puts(self, key, value):
+  def send_puts(self, values):
     self._oprot.writeMessageBegin('puts', TMessageType.CALL, self._seqid)
     args = puts_args()
-    args.key = key
-    args.value = value
+    args.values = values
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -133,7 +127,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = put_result()
     try:
-      self._handler.put(args.key, args.value)
+      self._handler.put(args.value)
     except OZException, ouch:
       result.ouch = ouch
     oprot.writeMessageBegin("put", TMessageType.REPLY, seqid)
@@ -147,7 +141,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = puts_result()
     try:
-      self._handler.puts(args.key, args.value)
+      self._handler.puts(args.values)
     except OZException, ouch:
       result.ouch = ouch
     oprot.writeMessageBegin("puts", TMessageType.REPLY, seqid)
@@ -161,18 +155,15 @@ class Processor(Iface, TProcessor):
 class put_args:
   """
   Attributes:
-   - key
    - value
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'key', None, None, ), # 1
-    (2, TType.STRING, 'value', None, None, ), # 2
+    (1, TType.STRING, 'value', None, None, ), # 1
   )
 
-  def __init__(self, key=None, value=None,):
-    self.key = key
+  def __init__(self, value=None,):
     self.value = value
 
   def read(self, iprot):
@@ -185,11 +176,6 @@ class put_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRING:
-          self.key = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
         if ftype == TType.STRING:
           self.value = iprot.readString();
         else:
@@ -204,12 +190,8 @@ class put_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('put_args')
-    if self.key is not None:
-      oprot.writeFieldBegin('key', TType.STRING, 1)
-      oprot.writeString(self.key)
-      oprot.writeFieldEnd()
     if self.value is not None:
-      oprot.writeFieldBegin('value', TType.STRING, 2)
+      oprot.writeFieldBegin('value', TType.STRING, 1)
       oprot.writeString(self.value)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -294,19 +276,16 @@ class put_result:
 class puts_args:
   """
   Attributes:
-   - key
-   - value
+   - values
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.LIST, 'key', (TType.STRING,None), None, ), # 1
-    (2, TType.LIST, 'value', (TType.STRING,None), None, ), # 2
+    (1, TType.LIST, 'values', (TType.STRING,None), None, ), # 1
   )
 
-  def __init__(self, key=None, value=None,):
-    self.key = key
-    self.value = value
+  def __init__(self, values=None,):
+    self.values = values
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -319,21 +298,11 @@ class puts_args:
         break
       if fid == 1:
         if ftype == TType.LIST:
-          self.key = []
+          self.values = []
           (_etype17, _size14) = iprot.readListBegin()
           for _i18 in xrange(_size14):
             _elem19 = iprot.readString();
-            self.key.append(_elem19)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.LIST:
-          self.value = []
-          (_etype23, _size20) = iprot.readListBegin()
-          for _i24 in xrange(_size20):
-            _elem25 = iprot.readString();
-            self.value.append(_elem25)
+            self.values.append(_elem19)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -347,18 +316,11 @@ class puts_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('puts_args')
-    if self.key is not None:
-      oprot.writeFieldBegin('key', TType.LIST, 1)
-      oprot.writeListBegin(TType.STRING, len(self.key))
-      for iter26 in self.key:
-        oprot.writeString(iter26)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.value is not None:
-      oprot.writeFieldBegin('value', TType.LIST, 2)
-      oprot.writeListBegin(TType.STRING, len(self.value))
-      for iter27 in self.value:
-        oprot.writeString(iter27)
+    if self.values is not None:
+      oprot.writeFieldBegin('values', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRING, len(self.values))
+      for iter20 in self.values:
+        oprot.writeString(iter20)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

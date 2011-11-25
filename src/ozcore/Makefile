@@ -1,7 +1,7 @@
 # Compiler and flags
-CXX = gcc
+CC = gcc
 LD = gcc
-CXXFLAGS := -D_FILE_OFFSET_BITS=64
+CFLAGS := -D_FILE_OFFSET_BITS=64
 LINKFLAGS := 
 
 # Objects for sort
@@ -12,10 +12,10 @@ STORE = ../../bin/OZoneStore
 all: $(STORE)
 
 $(STORE): $(OBJS)
-	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS) -o $(STORE)
+	$(LD) $(CFLAGS) $(LINKFLAGS) $(OBJS) -o $(STORE)
 
 %.o:%.c
-	$(CXX) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 # Clear
 .PHONY: all clean

@@ -12,7 +12,7 @@ def test_write_single():
     try:
         client = OZoneClient.OZoneWriteClient("127.0.0.1", 9090)
         for i in xrange(1024):
-            client.put(str(random.randint(0, 10000000)), "a" * 1024)
+            client.put(str(i) * 1024)
     except Exception as e:
         print e
         

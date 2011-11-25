@@ -3,6 +3,7 @@
 
 #include "../ozcore/ozone.h"
 #include "OZWriteService.h"
+#include <signal.h>
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>
@@ -24,28 +25,82 @@ using boost::shared_ptr;
 
 using namespace ozstore;
 
+#define KEY_LEN 16
+
 class OZWriteServiceHandler : virtual public OZWriteServiceIf
 {
 	public:
 		OZWriteServiceHandler(const string& path)
 		{
+			// Open DB
 			if(ozwrite_open(&ow, path.c_str()))
 			{
 				throw TException("Open db fail.");
 			}
+
+			// Init mutex
+			if(pthread_mutex_init(&_lock, NULL))
+			{   
+				throw TException("Init mutex fail.");
+			}
+			
+			// Get max unique id
+			getmax(path.c_str());
 		}
 
 		virtual ~OZWriteServiceHandler()
 		{
 			ozwrite_close(&ow);
+			pthread_mutex_destroy(&_lock);
 		}
 
-		void put(const std::string& key, const std::string& value)
+		void getmax(const char* dbpath)
 		{
+			// Init
+			_id = 0;
+			// Get max id from key.dat
+			char fn[OZ_BUF_SIZE];
+			snprintf(fn, OZ_BUF_SIZE, "%s/%s", dbpath, OZ_KEY_FILENAME);
+			FILE* fp = fopen(fn, "rb");
+			if(!fp)
+			{
+				return ;
+			}
+			// Get max
+			char sid[OZ_KEY_BUF_SIZE];
+			long id;
+			off_t off;
+			uint32_t len;
+			while( fscanf(fp, "%s\t%lld\t%u", sid, &off, &len) != EOF )
+			{
+				id = atoi(sid);
+				if(id>_id)
+				{
+					_id = id;
+				}
+			}
+			_id++;
+			cout << _id << endl;
+			fclose(fp);
+		}
+
+		void put(const std::string& value)
+		{
+			//Lock
+			if(pthread_mutex_lock(&_lock))
+			{
+				pthread_mutex_unlock(&_lock);
+				return ;
+			}
+
+			//Make Incremental Key
+			snprintf(_key, KEY_LEN, "%ld", _id++);
+
 			//Try put
-			int ret = ozwrite_put(&ow, key.c_str(), value.c_str());
+			int ret = ozwrite_put(&ow, _key, value.c_str());
 			if(!ret)
 			{
+				pthread_mutex_unlock(&_lock);
 				return ;
 			}
 			// Not success
@@ -73,24 +128,51 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 					exp.why = "unknown error";
 					break;
 			}
+			pthread_mutex_unlock(&_lock);
 			throw exp;
+
 		}
 
-		void puts(const std::vector<std::string> & key, const std::vector<std::string> & value)
+		void puts(const std::vector<std::string> & values)
 		{
 			// Your implementation goes here
 			printf("puts\n");
 		}
 
 	private:
+		// OZoneWrite handle (shared by all threads, guard by _lock)
 		OZWrite ow;
+
+		// Mutex lock
+		pthread_mutex_t _lock;
+
+		// Key Buffer (shared by all thread, guared by _lock)
+		char _key[KEY_LEN];
+
+		// Key ID incremental (shared by all thread, guared by _lock)
+		long _id;
+
 };
+
+TNonblockingServer* ozserver = NULL;
+
+void handler_shutdown(int num)
+{
+	if(ozserver)
+	{
+		delete ozserver;
+	}
+}
 
 int main(int argc, char **argv)
 {
 	int port = 9090;
 	int numThreads = 8;
 	string path("/tmp/test_db");
+
+	//Bind signal
+	signal(SIGTERM, handler_shutdown);
+	signal(SIGINT, handler_shutdown);
 
 	//Create TProcessor
 	shared_ptr<OZWriteServiceHandler> handler(new OZWriteServiceHandler(path));
@@ -106,10 +188,10 @@ int main(int argc, char **argv)
 	threadManager->start();
 
 	//Create TNonblockingServer
-	TNonblockingServer server(processor, protocolFactory, port, threadManager);
-	cout << "OZWriteServer Starting..." << endl;
-	server.serve();
-	cout << "OZWriteServer Stoping..." << endl;
+	ozserver = new TNonblockingServer(processor, protocolFactory, port, threadManager);
+	cout << "OZWriteServer Starting......" << endl;
+	ozserver->serve();
+	cout << "OZWriteServer Stopped......" << endl;
 	return 0;
 }
 

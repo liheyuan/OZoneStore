@@ -16,7 +16,7 @@ class OZoneWriteClient:
 	def __del__(self):
 		self.transport.close()
 		
-	def put(self, key, value):
-		self.client.put(key, value)
+	def put(self, value):
+		self.client.put(value)
 
 		

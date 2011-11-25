@@ -39,12 +39,6 @@ int ozwrite_open(OZWrite* handle, const char* dbpath)
 		return 2;
 	}
 
-	/* Init mutex */
-	if(pthread_mutex_init(&handle->_lock, NULL))
-	{
-		return 4;	
-	}
-
 	//Succ
 	return 0;
 }
@@ -54,12 +48,6 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 	//Var
 	off_t off;
 	uint32_t len;
-
-	/* mutex_lock */
-	if(pthread_mutex_lock(&handle->_lock))
-	{
-		return 7;
-	}
 
 	//Check handle
 	if (!handle)
@@ -104,19 +92,20 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 	fflush(handle->_fpkey);
 	fflush(handle->_fpval);
 
-	if(pthread_mutex_unlock(&handle->_lock))
-	{
-		return 8;
-	}
-
 	//All Succ
 	return 0;
 }
 
 void ozwrite_close(OZWrite* handle)
 {
-	fclose(handle->_fpkey);
-	fclose(handle->_fpval);
-	pthread_mutex_destroy(&handle->_lock);
-	printf("ozwrite_close\n");
+	if(handle->_fpkey)
+	{
+		fflush(handle->_fpkey);
+		fclose(handle->_fpkey);
+	}
+	if(handle->_fpval)
+	{
+		fflush(handle->_fpval);
+		fclose(handle->_fpval);
+	}
 }

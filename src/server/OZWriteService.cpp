@@ -29,14 +29,6 @@ uint32_t OZWriteService_put_args::read(::apache::thrift::protocol::TProtocol* ip
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->key);
-          this->__isset.key = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->value);
           this->__isset.value = true;
         } else {
@@ -58,10 +50,7 @@ uint32_t OZWriteService_put_args::read(::apache::thrift::protocol::TProtocol* ip
 uint32_t OZWriteService_put_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("OZWriteService_put_args");
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->key);
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->value);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -72,10 +61,7 @@ uint32_t OZWriteService_put_args::write(::apache::thrift::protocol::TProtocol* o
 uint32_t OZWriteService_put_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("OZWriteService_put_pargs");
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->key)));
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->value)));
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -202,39 +188,19 @@ uint32_t OZWriteService_puts_args::read(::apache::thrift::protocol::TProtocol* i
       case 1:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->key.clear();
+            this->values.clear();
             uint32_t _size18;
             ::apache::thrift::protocol::TType _etype21;
             iprot->readListBegin(_etype21, _size18);
-            this->key.resize(_size18);
+            this->values.resize(_size18);
             uint32_t _i22;
             for (_i22 = 0; _i22 < _size18; ++_i22)
             {
-              xfer += iprot->readString(this->key[_i22]);
+              xfer += iprot->readString(this->values[_i22]);
             }
             iprot->readListEnd();
           }
-          this->__isset.key = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->value.clear();
-            uint32_t _size23;
-            ::apache::thrift::protocol::TType _etype26;
-            iprot->readListBegin(_etype26, _size23);
-            this->value.resize(_size23);
-            uint32_t _i27;
-            for (_i27 = 0; _i27 < _size23; ++_i27)
-            {
-              xfer += iprot->readString(this->value[_i27]);
-            }
-            iprot->readListEnd();
-          }
-          this->__isset.value = true;
+          this->__isset.values = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -254,24 +220,13 @@ uint32_t OZWriteService_puts_args::read(::apache::thrift::protocol::TProtocol* i
 uint32_t OZWriteService_puts_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("OZWriteService_puts_args");
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->key.size()));
-    std::vector<std::string> ::const_iterator _iter28;
-    for (_iter28 = this->key.begin(); _iter28 != this->key.end(); ++_iter28)
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->values.size()));
+    std::vector<std::string> ::const_iterator _iter23;
+    for (_iter23 = this->values.begin(); _iter23 != this->values.end(); ++_iter23)
     {
-      xfer += oprot->writeString((*_iter28));
-    }
-    xfer += oprot->writeListEnd();
-  }
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_LIST, 2);
-  {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->value.size()));
-    std::vector<std::string> ::const_iterator _iter29;
-    for (_iter29 = this->value.begin(); _iter29 != this->value.end(); ++_iter29)
-    {
-      xfer += oprot->writeString((*_iter29));
+      xfer += oprot->writeString((*_iter23));
     }
     xfer += oprot->writeListEnd();
   }
@@ -284,24 +239,13 @@ uint32_t OZWriteService_puts_args::write(::apache::thrift::protocol::TProtocol* 
 uint32_t OZWriteService_puts_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("OZWriteService_puts_pargs");
-  xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("values", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->key)).size()));
-    std::vector<std::string> ::const_iterator _iter30;
-    for (_iter30 = (*(this->key)).begin(); _iter30 != (*(this->key)).end(); ++_iter30)
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->values)).size()));
+    std::vector<std::string> ::const_iterator _iter24;
+    for (_iter24 = (*(this->values)).begin(); _iter24 != (*(this->values)).end(); ++_iter24)
     {
-      xfer += oprot->writeString((*_iter30));
-    }
-    xfer += oprot->writeListEnd();
-  }
-  xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_LIST, 2);
-  {
-    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->value)).size()));
-    std::vector<std::string> ::const_iterator _iter31;
-    for (_iter31 = (*(this->value)).begin(); _iter31 != (*(this->value)).end(); ++_iter31)
-    {
-      xfer += oprot->writeString((*_iter31));
+      xfer += oprot->writeString((*_iter24));
     }
     xfer += oprot->writeListEnd();
   }
@@ -407,19 +351,18 @@ uint32_t OZWriteService_puts_presult::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-void OZWriteServiceClient::put(const std::string& key, const std::string& value)
+void OZWriteServiceClient::put(const std::string& value)
 {
-  send_put(key, value);
+  send_put(value);
   recv_put();
 }
 
-void OZWriteServiceClient::send_put(const std::string& key, const std::string& value)
+void OZWriteServiceClient::send_put(const std::string& value)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("put", ::apache::thrift::protocol::T_CALL, cseqid);
 
   OZWriteService_put_pargs args;
-  args.key = &key;
   args.value = &value;
   args.write(oprot_);
 
@@ -464,20 +407,19 @@ void OZWriteServiceClient::recv_put()
   return;
 }
 
-void OZWriteServiceClient::puts(const std::vector<std::string> & key, const std::vector<std::string> & value)
+void OZWriteServiceClient::puts(const std::vector<std::string> & values)
 {
-  send_puts(key, value);
+  send_puts(values);
   recv_puts();
 }
 
-void OZWriteServiceClient::send_puts(const std::vector<std::string> & key, const std::vector<std::string> & value)
+void OZWriteServiceClient::send_puts(const std::vector<std::string> & values)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("puts", ::apache::thrift::protocol::T_CALL, cseqid);
 
   OZWriteService_puts_pargs args;
-  args.key = &key;
-  args.value = &value;
+  args.values = &values;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -589,7 +531,7 @@ void OZWriteServiceProcessor::process_put(int32_t seqid, ::apache::thrift::proto
 
   OZWriteService_put_result result;
   try {
-    iface_->put(args.key, args.value);
+    iface_->put(args.value);
   } catch (OZException &ouch) {
     result.ouch = ouch;
     result.__isset.ouch = true;
@@ -645,7 +587,7 @@ void OZWriteServiceProcessor::process_puts(int32_t seqid, ::apache::thrift::prot
 
   OZWriteService_puts_result result;
   try {
-    iface_->puts(args.key, args.value);
+    iface_->puts(args.values);
   } catch (OZException &ouch) {
     result.ouch = ouch;
     result.__isset.ouch = true;
