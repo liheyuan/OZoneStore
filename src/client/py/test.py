@@ -24,7 +24,18 @@ def test_write():
         p.start()
     for p in ps:
         p.join()
-    
+
+def test_writes_single():
+    try:
+        client = OZoneClient.OZoneWriteClient("127.0.0.1", 9090)
+        values = []
+        for i in xrange(1024):
+            values.append(str(i) * 1024)
+        client.puts(values)
+    except Exception as e:
+        print e
 
 if __name__ == "__main__":
-    test_write()
+    #test_write()
+    test_writes_single()
+    

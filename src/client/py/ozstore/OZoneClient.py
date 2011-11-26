@@ -19,4 +19,6 @@ class OZoneWriteClient:
 	def put(self, value):
 		self.client.put(value)
 
+	def puts(self, values):
+		self.client.puts(values)
 		

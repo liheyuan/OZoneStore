@@ -100,6 +100,7 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 			int ret = ozwrite_put(&ow, _key, value.c_str());
 			if(!ret)
 			{
+				//Succ, unlock and return
 				pthread_mutex_unlock(&_lock);
 				return ;
 			}
@@ -128,15 +129,34 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 					exp.why = "unknown error";
 					break;
 			}
+
+			//Unlock and return
 			pthread_mutex_unlock(&_lock);
 			throw exp;
-
 		}
 
 		void puts(const std::vector<std::string> & values)
 		{
-			// Your implementation goes here
-			printf("puts\n");
+			//Lock
+			if(pthread_mutex_lock(&_lock))
+			{
+				pthread_mutex_unlock(&_lock);
+				return ;
+			}
+			
+			//Put each values
+			for(size_t i=0; i<values.size(); i++)
+			{
+				//Make Incremental Key
+				snprintf(_key, KEY_LEN, "%ld", _id++);
+
+				//Try put and ignore result
+				ozwrite_put(&ow, _key, values[i].c_str());
+
+			}
+
+			//Unlock
+			pthread_mutex_unlock(&_lock);
 		}
 
 	private:
@@ -189,9 +209,9 @@ int main(int argc, char **argv)
 
 	//Create TNonblockingServer
 	ozserver = new TNonblockingServer(processor, protocolFactory, port, threadManager);
-	cout << "OZWriteServer Starting......" << endl;
+	cout << "OZoneStore Write Server Starting ..." << endl;
 	ozserver->serve();
-	cout << "OZWriteServer Stopped......" << endl;
+	cout << "OZoneStore Write Server Stopping ..." << endl;
 	return 0;
 }
 
