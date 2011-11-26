@@ -394,5 +394,6 @@ void ozread_get_free(OZRead_Get* param)
 	{
 		free(param->_value);
 		param->_value = NULL;
+		printf("freed\n");
 	}
 }
