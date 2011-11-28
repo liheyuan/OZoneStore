@@ -9,8 +9,8 @@
 #include <server/TSimpleServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
-#include <thrift/concurrency/ThreadManager.h>
-#include <thrift/concurrency/PosixThreadFactory.h>
+#include <concurrency/ThreadManager.h>
+#include <concurrency/PosixThreadFactory.h>
 #include <server/TNonblockingServer.h>
 #include <string>
 #include <iostream>
