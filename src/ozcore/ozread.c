@@ -12,6 +12,7 @@
 
 int ozread_open(OZRead* handle, const char* dbpath)
 {
+	//Open key & value dat
 	int ret_kf = ozread_open_kf(handle, dbpath);
 	if (ret_kf)
 	{

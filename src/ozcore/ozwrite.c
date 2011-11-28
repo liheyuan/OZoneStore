@@ -36,7 +36,7 @@ int ozwrite_open(OZWrite* handle, const char* dbpath)
 	handle->_fpval = fopen(buf, "ab");
 	if (!handle->_fpval)
 	{
-		return 2;
+		return 3;
 	}
 
 	//Succ

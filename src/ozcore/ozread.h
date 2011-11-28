@@ -100,6 +100,9 @@ typedef struct OZRead
 	/* File handler for value file (mode:rb)*/
 	FILE* _fpval;
 
+	/* File handler for flock */
+	FILE* _fplock;
+
 } OZRead;
 
 /* Public Functions */
@@ -110,7 +113,7 @@ typedef struct OZRead
  * @param handle The handler used throughout ozread
  * @param dbpath path that store the db
  *
- * @return 0:success,
+ * @return 0:success, 1:other fail, 3:flock fail
  */
 int ozread_open(OZRead* handle, const char* dbpath);
 

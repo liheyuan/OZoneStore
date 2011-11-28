@@ -26,6 +26,9 @@ typedef struct OZWrite
 	/* File handler for value file mode(ab) */
 	FILE* _fpval;
 
+	/* File handler for flock */
+	FILE* _fplock;
+
 } OZWrite;
 
 /*
@@ -34,7 +37,7 @@ typedef struct OZWrite
  * @param handle The handler used throughout ozwrite
  * @param dbpath The path for db
  *
- * @return 0:succ, 1: invalid handle, 2:open key file fail, 3:open value file fail, 4:mutex_lock init fail
+ * @return 0:succ, 1: invalid handle, 2:open key file fail, 3:open value file fail, 4:flock fail
  */
 int ozwrite_open(OZWrite* handle, const char* dbpath);
 

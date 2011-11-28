@@ -14,6 +14,7 @@
 #define OZ_BUF_SIZE 1024
 #define OZ_KEY_FILENAME "key.dat"
 #define OZ_VALUE_FILENAME "value.dat"
+#define OZ_FLOCK_FILENAME "flock"
 
 /* Include headers*/
 #include "ozread.h"
