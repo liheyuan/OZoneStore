@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	if(!ozsort_work(&param))
 	{
 		/* print lines */
-		printf("%lld\n", param._mlines);
+		printf("%ld\n", param._mlines);
 		fp = fopen(param._merge, "rb");
 		if(!fp)
 		{
