@@ -3,7 +3,7 @@ OS = $(shell getconf LONG_BIT)
 # Compiler and flags
 CXX = g++
 LD = g++ 
-CXXFLAGS := -D_FILE_OFFSET_BITS=64 -I../../include_deps/thrift
+CXXFLAGS := -D_FILE_OFFSET_BITS=64 -I../../include_deps/thrift -I../../include_deps/libevent
 LINKFLAGS := -lpthread
 LIBS_THRIFT := ../../lib_deps/$(OS)/libthriftnb.a
 LIBS_THRIFT += ../../lib_deps/$(OS)/libthrift.a
