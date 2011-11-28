@@ -26,9 +26,6 @@ typedef struct OZWrite
 	/* File handler for value file mode(ab) */
 	FILE* _fpval;
 
-	/* File handler for flock */
-	FILE* _fplock;
-
 } OZWrite;
 
 /*

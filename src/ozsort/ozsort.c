@@ -116,7 +116,7 @@ int ozsort_merge(OZSort* param)
 {
 	/* Var */
 	FILE* out;
-	OZRecord prev;
+	OZRecord prev = {NULL, 0, 0};
 	OZRecord* minr;
 	int i;
 	int minIdx;
@@ -156,7 +156,7 @@ int ozsort_merge(OZSort* param)
 	{
 		if(fscanf(fps[i], "%s\t%llu\t%u\n", key, &datas[i]._offset, &datas[i]._length)!=EOF)
 		{
-			datas[i]._key = malloc( sizeof(char) * (strlen(key) + 1));
+			datas[i]._key = malloc( sizeof(char) * (OZ_KEY_BUF_SIZE + 1));
 			strcpy(datas[i]._key ,key);
 			flags[i] = 1;
 		}

@@ -100,9 +100,6 @@ typedef struct OZRead
 	/* File handler for value file (mode:rb)*/
 	FILE* _fpval;
 
-	/* File handler for flock */
-	FILE* _fplock;
-
 } OZRead;
 
 /* Public Functions */
