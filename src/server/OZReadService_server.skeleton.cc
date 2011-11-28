@@ -48,18 +48,15 @@ class OZReadServiceHandler : virtual public OZReadServiceIf {
 			OZRead_Get param = {NULL, NULL};
 			param._key = (char*)key.c_str();
 
-			//Get
-			int ret = ozread_get(&_or, &param);
-			if(!ret)
-			{
-				_return.assign(param._value);
-				ozread_get_free(&param);
-				return ;
-			}
-			//Get Fail
+			//Get & result
 			OZException exp;
+			int ret = ozread_get(&_or, &param);
+
 			switch(ret)
 			{
+				case 0:
+					_return.assign(param._value);
+					break;
 				case 1:
 					exp.why = "invalid handle";
 					break;
@@ -79,12 +76,66 @@ class OZReadServiceHandler : virtual public OZReadServiceIf {
 					exp.why = "unknown error";
 			}
 			ozread_get_free(&param);
-			throw exp;
+			if(ret)
+			{
+				throw exp;
+			}
 		}
 
 		void gets(std::vector<std::string> & _return, const std::vector<std::string> & keys) {
-			// Your implementation goes here
-			printf("gets\n");
+			//Param	
+			OZRead_Gets gets;
+			OZException exp;
+			if(ozread_gets_init(&gets, keys.size()))
+			{
+				exp.why = "malloc for OZRead_Gets fail";
+				throw exp;
+			}
+
+			//Copy keys
+			for(size_t i=0; i<keys.size(); i++)
+			{
+				gets._keys[i] = (char*)keys[i].c_str();
+			}
+
+			//Read Values
+			int ret;
+			ret = ozread_gets(&_or, &gets);
+			
+			switch(ret)
+			{
+				case 0:
+					//succ
+					for(size_t i=0; i<gets._nkeys; i++)
+					{
+						string str;
+						if(gets._values[i])
+						{
+							str.assign(gets._values[i]);
+						}
+						_return.push_back(str);
+					}
+					break;
+				case 1:
+					exp.why = "invalid handle";
+					break;
+				case 2:
+					exp.why = "invalid param";
+					break;
+				case 3:
+					exp.why = "malloc for values fail";
+					break;
+				default:
+					break;
+			}
+
+			//Free resource & return
+			ozread_gets_free(&gets);
+
+			if(ret)
+			{
+				throw exp;
+			}
 		}
 
 	private:

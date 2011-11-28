@@ -80,7 +80,7 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 				}
 			}
 			_id++;
-			cout << _id << endl;
+			//cout << _id << endl;
 			fclose(fp);
 		}
 

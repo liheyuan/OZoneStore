@@ -169,6 +169,7 @@ int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf)
 	{
 		return 3;
 	}
+	buf[rec->_length] = '\0';
 
 	return 0;
 }
@@ -394,6 +395,5 @@ void ozread_get_free(OZRead_Get* param)
 	{
 		free(param->_value);
 		param->_value = NULL;
-		printf("freed\n");
 	}
 }

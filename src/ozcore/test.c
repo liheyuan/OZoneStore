@@ -31,7 +31,7 @@ void test_ozread_get()
 		//Param
 		OZRead_Get get = {NULL, NULL};
 		int ret;
-		get._key = "16455956";
+		get._key = "1";
 		//Get
 		ret = ozread_get(&or, &get);
 		if (!ret)
