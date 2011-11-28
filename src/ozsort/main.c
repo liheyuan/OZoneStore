@@ -14,18 +14,10 @@
 #include <time.h>
 #include <sys/time.h>
 
-void test_ozsort_work()
-{
-    OZSort param;
-    strcpy(param._src, "/tmp/test_db/key.dat");
-    printf("%d\n", ozsort_work(&param));
-	printf("%ld\n", param._mlines);
-}
-
 int main(int argc, char** argv)
 {
 	/* Argumengs */
-	OZSort param;
+	OZSort param = {_mlines:0, _nsplits:0};
 	FILE* fp;
 	char c;
 	size_t len;
