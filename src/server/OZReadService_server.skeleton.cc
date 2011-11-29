@@ -156,9 +156,18 @@ void handler_shutdown(int num)
 
 int main(int argc, char **argv)
 {
-	int port = 9090;
-	int numThreads = 4;
-	string path("/tmp/test_db");
+	//Param
+	if(argc!=3)
+	{
+		cout << "Usage:" << endl;
+		cout << argv[0] << " [port] [path]" << endl;
+		return -1;
+	}
+
+	//Init Param
+	int port = atoi(argv[1]);
+	string path(argv[2]);
+	int numThreads = 8;
 
 	//Bind signal
 	signal(SIGTERM, handler_shutdown);

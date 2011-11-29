@@ -8,10 +8,10 @@ import OZReadService
 	
 class OZoneWriteClient:
 	def __init__(self, host, port):
-		socket = TSocket.TSocket(host, port)
-		self.transport = TTransport.TFramedTransport(socket)
-		protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-		self.client = OZWriteService.Client(protocol)
+		self.socket = TSocket.TSocket(host, port)
+		self.transport = TTransport.TFramedTransport(self.socket)
+		self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
+		self.client = OZWriteService.Client(self.protocol)
 		self.transport.open()
 		
 	def __del__(self):

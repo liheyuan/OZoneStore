@@ -43,11 +43,11 @@ int ozwrite_open(OZWrite* handle, const char* dbpath)
 	return 0;
 }
 
-int ozwrite_put(OZWrite* handle, const char* key, const char* value)
+int ozwrite_put(OZWrite* handle, const char* key, const char* value, long length)
 {
 	//Var
 	off_t off;
-	uint32_t len;
+	uint32_t len = length;
 
 	//Check handle
 	if (!handle)
@@ -56,7 +56,7 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 	}
 
 	//Check value length
-	if(strlen(value)<1)
+	if(len<1)
 	{
 		return 5;
 	}
@@ -69,7 +69,6 @@ int ozwrite_put(OZWrite* handle, const char* key, const char* value)
 	}
 
 	//Write Value
-	len = strlen(value);
 	if (fwrite(value, len, 1, handle->_fpval) != 1)
 	{
 		return 3;

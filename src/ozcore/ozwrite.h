@@ -50,7 +50,7 @@ int ozwrite_open(OZWrite* handle, const char* dbpath);
  *                 7:lock fail, 8:unlock fail
  * 6:value
  */
-int ozwrite_put(OZWrite* handle, const char* key, const char* value);
+int ozwrite_put(OZWrite* handle, const char* key, const char* value, long length);
 
 /*
  * Release resources used by handle

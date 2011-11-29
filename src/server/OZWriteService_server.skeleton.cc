@@ -97,7 +97,7 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 			snprintf(_key, KEY_LEN, "%ld", _id++);
 
 			//Try put
-			int ret = ozwrite_put(&ow, _key, value.c_str());
+			int ret = ozwrite_put(&ow, _key, value.c_str(), value.length());
 			if(!ret)
 			{
 				//Succ, unlock and return
@@ -151,7 +151,7 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 				snprintf(_key, KEY_LEN, "%ld", _id++);
 
 				//Try put and ignore result
-				ozwrite_put(&ow, _key, values[i].c_str());
+				ozwrite_put(&ow, _key, values[i].c_str(), values[i].length());
 
 			}
 
@@ -186,9 +186,18 @@ void handler_shutdown(int num)
 
 int main(int argc, char **argv)
 {
-	int port = 9090;
+	//Param
+	if(argc!=3)
+	{
+		cout << "Usage:" << endl;
+		cout << argv[0] << " [port] [path]" << endl;
+		return -1;
+	}
+
+	//Init Param
+	int port = atoi(argv[1]);
+	string path(argv[2]);
 	int numThreads = 8;
-	string path("/tmp/test_db");
 
 	//Bind signal
 	signal(SIGTERM, handler_shutdown);

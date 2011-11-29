@@ -157,7 +157,7 @@ void test_ozwrite_put()
 				strcat(value, " ");
 				strcat(value, key);
 			}
-			if(ozwrite_put(&ow, key, value))
+			if(ozwrite_put(&ow, key, value, strlen(value)))
 			{
 				printf("write %s fail.\n", key);
 			}
