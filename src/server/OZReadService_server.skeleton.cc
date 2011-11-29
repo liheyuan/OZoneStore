@@ -55,7 +55,7 @@ class OZReadServiceHandler : virtual public OZReadServiceIf {
 			switch(ret)
 			{
 				case 0:
-					_return.assign(param._value);
+					_return.assign(param._value, param._len);
 					break;
 				case 1:
 					exp.why = "invalid handle";

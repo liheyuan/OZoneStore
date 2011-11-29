@@ -110,6 +110,7 @@ int ozread_get(OZRead* handle, OZRead_Get* param)
 
 	//Allocate memory for value
 	param->_value = (char*)malloc(sizeof(char)*( rec->_length + 1));
+	param->_len = rec->_length;
 	if(!param->_value)
 	{
 		return 5;

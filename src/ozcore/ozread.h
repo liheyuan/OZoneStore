@@ -62,6 +62,9 @@ typedef struct OZRead_Get
 	/* Value Buffer (Output) */
 	char* _value;
 
+	/* length of _value */
+	uint32_t _len;
+
 } OZRead_Get;
 
 /*
