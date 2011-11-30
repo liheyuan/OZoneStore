@@ -8,14 +8,17 @@ import OZReadService
 	
 class OZoneWriteClient:
 	def __init__(self, host, port):
-		self.socket = TSocket.TSocket(host, port)
-		self.transport = TTransport.TFramedTransport(self.socket)
-		self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-		self.client = OZWriteService.Client(self.protocol)
+		socket = TSocket.TSocket(host, port)
+		#self.transport = TTransport.TFramedTransport(socket)
+		self.transport = TTransport.TBufferedTransport(socket)
+		protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
+		self.client = OZWriteService.Client(protocol)
 		self.transport.open()
 		
 	def __del__(self):
 		self.transport.close()
+		del self.client
+		del self.transport
 		
 	def put(self, value):
 		self.client.put(value)
@@ -26,13 +29,16 @@ class OZoneWriteClient:
 class OZoneReadClient:
 	def __init__(self, host, port):
 		socket = TSocket.TSocket(host, port)
-		self.transport = TTransport.TFramedTransport(socket)
+		#self.transport = TTransport.TFramedTransport(socket)
+		self.transport = TTransport.TBufferedTransport(socket)
 		protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
 		self.client = OZReadService.Client(protocol)
 		self.transport.open()
 		
 	def __del__(self):
 		self.transport.close()
+		del self.client
+		del self.transport
 		
 	def get(self, value):
 		return self.client.get(value)
