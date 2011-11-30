@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <protocol/TBinaryProtocol.h>
 #include <server/TSimpleServer.h>
+#include <server/TThreadPoolServer.h>
 #include <transport/TServerSocket.h>
 #include <transport/TBufferTransports.h>
 #include <concurrency/ThreadManager.h>
@@ -174,14 +175,89 @@ class OZWriteServiceHandler : virtual public OZWriteServiceIf
 
 };
 
-TNonblockingServer* ozserver = NULL;
 
-void handler_shutdown(int num)
+TNonblockingServer* ozserver_nb = NULL;
+
+void handler_shutdown_nb(int num)
 {
-	if(ozserver)
+	if(ozserver_nb)
 	{
-		delete ozserver;
+		ozserver_nb->stop();
+		delete ozserver_nb;
 	}
+}
+
+//NonBlockingServer
+void server_nonblocking(const string path, int port, int threads)
+{
+	//Bind signal
+	signal(SIGTERM, handler_shutdown_nb);
+	signal(SIGINT, handler_shutdown_nb);
+
+	//Create TProcessor
+	shared_ptr<OZWriteServiceHandler> handler(new OZWriteServiceHandler(path));
+	shared_ptr<TProcessor> processor(new OZWriteServiceProcessor(handler));
+
+	//Create TProtocolFactory
+	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+
+	//Create ThreadManager
+	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(threads);
+	shared_ptr<ThreadFactory> threadFactory(new PosixThreadFactory());
+	threadManager->threadFactory(threadFactory);
+	threadManager->start();
+
+	//Create TNonblockingServer
+	ozserver_nb = new TNonblockingServer(processor, protocolFactory, port, threadManager);
+	cout << "OZoneStore Write Server Starting ..." << endl;
+	ozserver_nb->serve();
+	cout << "OZoneStore Write Server Stopping ..." << endl;
+
+}
+
+TThreadPoolServer* ozserver_tp = NULL;
+
+void handler_shutdown_tp(int num)
+{
+	if(ozserver_tp)
+	{
+		ozserver_tp->stop();
+		//delete ozserver_tp;
+	}
+}
+
+void server_threadpool(const string path, int port, int threads)
+{	
+	//Signal
+	signal(SIGTERM, handler_shutdown_tp);
+	signal(SIGINT, handler_shutdown_tp);
+
+	//Create TProcessor
+	shared_ptr<OZWriteServiceHandler> handler(new OZWriteServiceHandler(path));
+	shared_ptr<TProcessor> processor(new OZWriteServiceProcessor(handler));
+
+	//Create ServerTransport
+	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+
+	//Create TransportFactory
+	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+
+	//Create TProtocolFactory
+	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+
+	//Create ThreadManager
+	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(threads);
+	shared_ptr<ThreadFactory> threadFactory(new PosixThreadFactory());
+	threadManager->threadFactory(threadFactory);
+	threadManager->start();
+
+	//Create ThreadPool Server
+	ozserver_tp  = new TThreadPoolServer(processor, serverTransport , transportFactory, protocolFactory, threadManager);
+	cout << "OZoneStore Write Server Starting ..." << endl;
+	ozserver_tp->serve();
+	delete ozserver_tp;
+	cout << "OZoneStore Write Server Stopping ..." << endl;
+
 }
 
 int main(int argc, char **argv)
@@ -199,28 +275,12 @@ int main(int argc, char **argv)
 	string path(argv[2]);
 	int numThreads = 8;
 
-	//Bind signal
-	signal(SIGTERM, handler_shutdown);
-	signal(SIGINT, handler_shutdown);
 
-	//Create TProcessor
-	shared_ptr<OZWriteServiceHandler> handler(new OZWriteServiceHandler(path));
-	shared_ptr<TProcessor> processor(new OZWriteServiceProcessor(handler));
+	//NonBlocking Server	
+	//server_nonblocking(path, port, numThreads);
 
-	//Create TProtocolFactory
-	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+	//ThraedPool Server
+	server_threadpool(path, port, numThreads);
 
-	//Create ThreadManager
-	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(numThreads);
-	shared_ptr<ThreadFactory> threadFactory(new PosixThreadFactory());
-	threadManager->threadFactory(threadFactory);
-	threadManager->start();
-
-	//Create TNonblockingServer
-	ozserver = new TNonblockingServer(processor, protocolFactory, port, threadManager);
-	cout << "OZoneStore Write Server Starting ..." << endl;
-	ozserver->serve();
-	cout << "OZoneStore Write Server Stopping ..." << endl;
 	return 0;
 }
-
