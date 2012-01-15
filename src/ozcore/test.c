@@ -152,7 +152,7 @@ void test_ozwrite_put()
 			long k = random() % 10000000 + 10000000;
 			snprintf(key, OZ_KEY_BUF_SIZE, "%ld", k);
 			value[0] = '\0';
-			for(j = 0; j < 500; j++)
+			for(j = 0; j < 50; j++)
 			{
 				strcat(value, " ");
 				strcat(value, key);
@@ -168,6 +168,14 @@ void test_ozwrite_put()
 	ozwrite_close(&ow);
 }
 
+void test_oztrav_open()
+{
+	OZTrav ot;
+	int ret;
+	ret = oztrav_open(&ot, "/tmp/test_db");
+	oztrav_close(&ot);
+	printf("test_oztrav_open() %d\n", ret);
+}
 
 int main()
 {
@@ -175,8 +183,9 @@ int main()
 	//test_ozread_get();
 	//test_ozread_gets();
 	//test_ozwrite_put();
+	test_oztrav_open();
 
-	sleep(10);
+	//sleep(10);
 	return 0;
 
 }
