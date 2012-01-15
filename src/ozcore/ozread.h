@@ -17,22 +17,22 @@
 
 /* Public Struct */
 
-/*
- * Record In RAM for faster lookup
- * key -> offset & length
- */
-typedef struct OZRecord
-{
-	/* key string must \0 terminated */
-	char* _key;
-
-	/* offset in value file */
-	uint64_t _offset;
-
-	/* length start from _offset */
-	uint32_t _length;
-
-} OZRecord;
+///*
+// * Record In RAM for faster lookup
+// * key -> offset & length
+// */
+//typedef struct OZRecord
+//{
+//	/* key string must \0 terminated */
+//	char* _key;
+//
+//	/* offset in value file */
+//	uint64_t _offset;
+//
+//	/* length start from _offset */
+//	uint32_t _length;
+//
+//} OZRecord;
 
 /*
  * Record snippet for oz_gets sort

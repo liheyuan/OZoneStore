@@ -159,7 +159,7 @@ int ozread_get_key(OZRead* handle, const char* key, OZRecord** rec)
 int ozread_get_value(OZRead* handle, const OZRecord* rec, char* buf)
 {
 	int ret;
-	
+
 	/* fseeko */
 	if (fseeko(handle->_fpval, rec->_offset, SEEK_SET))
 	{
@@ -330,10 +330,10 @@ int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 
 	/* Test only */
 	/*for (i = 0; i < param->_ncookies; i++)
-	{
-		printf("%s %llu %u\n", param->_keys[param->_cookies[i]._index],
-				param->_cookies[i]._offset, param->_cookies[i]._length);
-	}*/
+	  {
+	  printf("%s %llu %u\n", param->_keys[param->_cookies[i]._index],
+	  param->_cookies[i]._offset, param->_cookies[i]._length);
+	  }*/
 
 	return 0;
 }
@@ -380,6 +380,11 @@ void ozread_close(OZRead* handle)
 	{
 		if (handle->_recs)
 		{
+			long i=0;
+			for(i=0; i< handle->_nrecs; i++)
+			{   
+				free(handle->_recs[i]._key);
+			}   
 			free(handle->_recs);
 		}
 		handle->_nrecs = 0;

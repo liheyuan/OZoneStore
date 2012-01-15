@@ -6,7 +6,7 @@ LINKFLAGS :=
 
 # Objects for sort
 OBJS := $(patsubst %.c, %.o, $(wildcard *.c))
-STORE = ../../bin/OZoneStore
+STORE = ../../bin/OZCore
 
 # For all binary files
 all: $(STORE)
