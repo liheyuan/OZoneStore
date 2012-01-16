@@ -22,6 +22,9 @@ cross-language problem.
 An unique DocID for every document perferd to be pre-generated before index. Only a small frantion of nosql suppout
 incremental ID. We implement this in OZoneStore.
 
+(5) Fast && Memory efficient Traverse
+During the indexing process, we need to get documents one by one. As the original key file is appending according to value file's offset, we need not to sort it, but load it into memory. The traverse of value file from begining to the end is the most efficient way.
+
 Also, we DON'T need some feature as other nosql provided.
 
 (1) Cache to speed up key->value lookup
@@ -29,7 +32,8 @@ Search engine need only to get value from key at the stage of display result & s
 and usually 10 at once, which is not so performance demand. Pure one Disk I/O per key & value is enough to fulfill
 this demand. We'd like to save some RAM and bring our Search Engine cost down.
 
-(2) ...?
+(2) Realtime 7*24 online service
+For our search engine, the index && crawler is an offline process, which means we crawl web pages, index it and push it online. All data won't change forever. This is true for most of the small searh engine that don't update index in realtime.
 
 Why it is called OZoneStore?
 ===========================
