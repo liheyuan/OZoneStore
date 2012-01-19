@@ -66,8 +66,8 @@ class OZTravServiceHandler : virtual public OZTravServiceIf {
 			// OutputResult
 			if(!ret)
 			{   
-				_return.key.assign(cur._key);
-				_return.value.assign(cur._value);
+				_return.key.assign(cur._key, cur._key_len);
+				_return.value.assign(cur._value, cur._value_len);
 				_return.cur = cur._cur;
 			}  
 			else if (ret==1)
