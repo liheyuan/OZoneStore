@@ -147,9 +147,9 @@ void test_ozwrite_put()
 	{
 		printf("open db succ\n");
 		srandom(time(NULL));
-		for (i = 0; i < 100000; i++)
+		for (i = 0; i < 300000; i++)
 		{
-			long k = random() % 10000000 + 10000000;
+			long k = random() % 10000000;
 			snprintf(key, OZ_KEY_BUF_SIZE, "%ld", k);
 			value[0] = '\0';
 			for(j = 0; j < 50; j++)
@@ -177,13 +177,40 @@ void test_oztrav_open()
 	printf("test_oztrav_open() %d\n", ret);
 }
 
+void test_oztrav_next()
+{
+	OZTrav ot;
+	int ret;
+	ret = oztrav_open(&ot, "/tmp/test_db");
+	if(ret)
+	{
+		printf("oztrav_open fail.\n");
+	}
+	else
+	{
+		// Init cursor
+		OZTrav_Cursor cur;
+		oztrav_cursor_init(&cur);
+		// Traverse
+		while(!oztrav_next(&ot, &cur))
+		{
+			printf("key: %s\n", cur._key);	
+			printf("value: %s\n", cur._value);	
+		}
+		// Free cursor
+		oztrav_cursor_free(&cur);
+	}
+	oztrav_close(&ot);
+}
+
 int main()
 {
 	//test_ozread_open();
 	//test_ozread_get();
 	//test_ozread_gets();
 	//test_ozwrite_put();
-	test_oztrav_open();
+	//test_oztrav_open();
+	test_oztrav_next();
 
 	//sleep(10);
 	return 0;

@@ -27,19 +27,22 @@ typedef struct OZTrav_Cursor
 	char* _key;
 
 	/* length for _length  */
-	uint32_t _key_len;
+	long _key_len;
 
 	/* alloc length for _length  */
-	uint32_t _key_len_alloc;
+	long _key_len_alloc;
 
 	/* Value Buffer (Output) */
 	char* _value;
 
 	/* length of _value */
-	uint32_t _value_len;
+	long _value_len;
 
 	/* alloc length for _value  */
-	uint32_t _value_len_alloc;
+	long _value_len_alloc;
+
+	/* Cursor Offset */
+	long _cur;
 
 } OZTrav_Cursor;
 
@@ -87,7 +90,7 @@ int oztrav_open_vf(OZTrav* handle, const char* dbpath);
  * @param handle The handler used throughout oztrav
  * @param dbpath path that store the db
  *
- * @return 0:success, 1:key file open error, 2:
+ * @return 0:success, 1:key file open error, 2:key file has 0 key
  */
 int oztrav_open_kf(OZTrav* handle, const char* dbpath);
 
@@ -98,5 +101,28 @@ int oztrav_open_kf(OZTrav* handle, const char* dbpath);
  *
  */
 void oztrav_close(OZTrav* handle);
+
+/*
+ * Init the Cursor
+ *
+ * @param cursor The cursor to be inited 
+ */
+void oztrav_cursor_init(OZTrav_Cursor* cursor);
+
+/*
+ * Free the Cursor
+ *
+ * @param cursor The cursor to be inited 
+ */
+void oztrav_cursor_free(OZTrav_Cursor* cursor);
+
+/*
+ * Traverse to next
+ * Inc cursor
+ *
+ * @param cursor The cursor store cur and input/output
+ * @return 0:success, 1:reach end 2:read value file fail 3:memory not enough
+ */
+int oztrav_next(OZTrav* handle, OZTrav_Cursor* cursor);
 
 #endif /* OZONEREAD_H_ */

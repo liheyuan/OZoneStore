@@ -34,6 +34,11 @@ int ozread_open_kf(OZRead* handle, const char* dbpath)
 	uint64_t offset;
 	uint32_t length;
 
+	/* Init handle */
+	handle->_fpval = NULL;
+	handle->_recs = NULL;
+	handle->_nrecs = 0;
+
 	/* Use sort twice to sort/uniqure keyfile -> pipe to FILE* */
 	snprintf(
 			cmd,
@@ -305,7 +310,7 @@ int cmp_ozread_gets_keys(const void* a, const void* b)
 int ozread_gets_keys(OZRead* handle, OZRead_Gets* param)
 {
 	/* Var */
-	int i, cnt;
+int i, cnt;
 	OZRecord* rec = NULL;
 
 	/* Read all keys */
