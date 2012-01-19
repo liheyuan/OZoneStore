@@ -23,14 +23,23 @@ OBJS_READ += ../ozcore/ozread.o
 OBJS_READ += OZReadService_server.skeleton.o
 READ_SERVER = ../../bin/OZoneReadServer
 
+# Objects for TravServer
+OBJS_TRAV := $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+OBJS_TRAV += ../ozcore/oztrav.o
+OBJS_TRAV += OZTravService_server.skeleton.o
+TRAV_SERVER = ../../bin/OZoneTravServer
+
 # For all binary files
-all: $(WRITE_SERVER) $(READ_SERVER)
+all: $(WRITE_SERVER) $(READ_SERVER) $(TRAV_SERVER)
 
 $(WRITE_SERVER): $(OBJS_WRITE)
 	$(LD) $(CXXFLAGS) $(OBJS_WRITE) $(LINKFLAGS) $(LIBS_THRIFT) -o $(WRITE_SERVER)
 
 $(READ_SERVER): $(OBJS_READ)
 	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_READ) $(LIBS_THRIFT) -o $(READ_SERVER)
+
+$(TRAV_SERVER): $(OBJS_TRAV)
+	$(LD) $(CXXFLAGS) $(LINKFLAGS) $(OBJS_TRAV) $(LIBS_THRIFT) -o $(TRAV_SERVER)
 
 %.o:%.c
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -44,5 +53,5 @@ $(READ_SERVER): $(OBJS_READ)
 # Clear
 .PHONY: all clean
 clean:
-	rm -rf $(OBJS_WRITE) $(OJBS_WRITE:.o=.d) $(OBJS_READ) $(OJBS_READ:.o=.d) $(WRITE_SERVER) $(READ_SERVER)
+	rm -rf $(OBJS_WRITE) $(OJBS_WRITE:.o=.d) $(OBJS_READ) $(OJBS_READ:.o=.d) $(OBJS_TRAV) $(OJBS_TRAV:.o=.d) $(WRITE_SERVER) $(READ_SERVER) $(TRAV_SERVER)
 

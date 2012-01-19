@@ -2,11 +2,11 @@ namespace cpp ozstore
 namespace py ozstore
 
 
-exception OZException{
+exception OZException {
 	1:string why
 }
 
-service OZReadService{
+service OZReadService {
 	
 	string get(1:string key) throws (1:OZException ouch),
 
@@ -23,4 +23,22 @@ service OZWriteService{
 	/* #void puts(1:list<string> key, 2:list<string> values) throws (1:OZException ouch) */
 	#key was auto-generated (increcemental)
 	void puts(1:list<string> values) throws (1:OZException ouch)
+}
+
+struct TravPair {
+
+    # Key
+    1:string key,
+
+    # Value
+	2:string value,
+
+	# Cur
+	3:i32 cur = 0
+}
+
+service OZTravService {
+
+    # Traverse, Pair is input/output
+	TravPair next_kv(1:i32 cur)
 }

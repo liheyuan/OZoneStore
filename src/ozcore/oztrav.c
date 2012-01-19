@@ -185,7 +185,7 @@ int oztrav_next(OZTrav* handle, OZTrav_Cursor* cursor)
 		/* value:check buffer */
 		if( cursor->_value_len_alloc <= prec->_length )
 		{
-			cursor->_value = realloc(cursor->_value, prec->_length+1);
+			cursor->_value = (char*)realloc(cursor->_value, prec->_length+1);
 			if(!cursor->_value)
 			{
 				return 3;
@@ -206,7 +206,7 @@ int oztrav_next(OZTrav* handle, OZTrav_Cursor* cursor)
 		len = strlen(prec->_key);
 		if( cursor->_key_len_alloc <= len )
 		{
-			cursor->_key = realloc(cursor->_key, len+1);
+			cursor->_key = (char*)realloc(cursor->_key, len+1);
 			if(!cursor->_key)
 			{
 				return 3;

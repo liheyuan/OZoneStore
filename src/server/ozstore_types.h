@@ -56,6 +56,63 @@ class OZException : public ::apache::thrift::TException {
 
 };
 
+typedef struct _TravPair__isset {
+  _TravPair__isset() : key(false), value(false), cur(false) {}
+  bool key;
+  bool value;
+  bool cur;
+} _TravPair__isset;
+
+class TravPair {
+ public:
+
+  static const char* ascii_fingerprint; // = "343DA57F446177400B333DC49B037B0C";
+  static const uint8_t binary_fingerprint[16]; // = {0x34,0x3D,0xA5,0x7F,0x44,0x61,0x77,0x40,0x0B,0x33,0x3D,0xC4,0x9B,0x03,0x7B,0x0C};
+
+  TravPair() : key(""), value(""), cur(0) {
+  }
+
+  virtual ~TravPair() throw() {}
+
+  std::string key;
+  std::string value;
+  int32_t cur;
+
+  _TravPair__isset __isset;
+
+  void __set_key(const std::string& val) {
+    key = val;
+  }
+
+  void __set_value(const std::string& val) {
+    value = val;
+  }
+
+  void __set_cur(const int32_t val) {
+    cur = val;
+  }
+
+  bool operator == (const TravPair & rhs) const
+  {
+    if (!(key == rhs.key))
+      return false;
+    if (!(value == rhs.value))
+      return false;
+    if (!(cur == rhs.cur))
+      return false;
+    return true;
+  }
+  bool operator != (const TravPair &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TravPair & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
 } // namespace
 
 #endif

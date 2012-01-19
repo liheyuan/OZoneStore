@@ -63,8 +63,19 @@ def test_read():
     for t in ts:
         t.join()
 
+def test_trav():
+    try:
+        client = OZoneClient.OZoneTravClient("127.0.0.1", 9999)
+        cur = 0
+        while True:
+            (key, value, cur) = client.next_kv(cur)	
+            #print cur
+    except Exception as e:
+        print e
+
 if __name__ == "__main__":
-    test_write()
+    #test_write()
     #test_writes_single()
     #test_read()
+    test_trav()
     

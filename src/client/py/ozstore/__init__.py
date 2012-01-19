@@ -1,1 +1,1 @@
-__all__ = ['ttypes', 'constants', 'OZReadService', 'OZWriteService']
+__all__ = ['ttypes', 'constants', 'OZReadService', 'OZWriteService', 'OZTravService']
